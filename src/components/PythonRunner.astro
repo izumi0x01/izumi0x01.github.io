@@ -1,0 +1,8 @@
+---
+interface Props { code: string; title?: string; }
+const {code,title='Python / 実行セル'}=Astro.props;
+---
+<div class="python-runner" data-code={code}><div class="runner-toolbar"><strong>{title}</strong><button data-action="run">Run ▶</button><button data-action="stop" disabled>Stop ■</button><button data-action="reset">Reset</button><button data-action="copy">Copy</button></div><div class="runner-editor" aria-label="Pythonコードエディタ"></div><div class="runner-status" role="status" aria-live="polite">実行するとPython環境を読み込みます。</div><div class="runner-output" aria-live="polite"></div><div class="runner-help">ブラウザ内で実行 · セル間の変数は独立 · 実行上限30秒（初回読込は最大180秒）</div></div>
+<script>
+ import '../lib/runner';
+</script>

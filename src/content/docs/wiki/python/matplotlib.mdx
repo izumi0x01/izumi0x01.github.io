@@ -1,0 +1,29 @@
+---
+title: Matplotlibによる正弦波の描画
+description: linspaceで等間隔の標本を生成し、sin関数を評価します。標本数や周波数を変えて描画の違いを観察してください。
+---
+import PythonRunner from '@components/PythonRunner.astro';
+
+## 正弦波を描く
+
+linspaceで等間隔の標本を生成し、sin関数を評価します。標本数や周波数を変えて描画の違いを観察してください。
+
+$$
+y=\sin(\omega x)
+$$
+
+## 実行して確かめる
+
+コードを編集して **Run** を押してください。初回は実行環境のダウンロードに時間がかかります。
+
+<PythonRunner code={"import numpy as np\nimport matplotlib.pyplot as plt\nx = np.linspace(0, 10, 100)\ny = np.sin(x)\nplt.plot(x, y, color=\"seagreen\")\nplt.xlabel(\"x\")\nplt.ylabel(\"sin(x)\")\nplt.grid(True)\nprint(\"samples:\", len(x))\nplt.show()"} />
+
+## 試してみよう
+
+数値やパラメータを変更し、式が予測する結果と出力を比較してください。セルの変数は実行ごとに初期化されます。
+
+## 独立した2つ目のセル
+
+同じページのセルも変数を共有しません。
+
+<PythonRunner code={"print(2 + 3)"} />

@@ -1,0 +1,7 @@
+---
+import { profile, navigation, href } from '../data/site';
+---
+<nav class="site-nav" aria-label="メインナビゲーション"><a class="wordmark" href={href('')}>{profile.name}<span> / Research Notes</span></a><div class="nav-links">{navigation.map(([label,path]) => <a href={href(path)} aria-current={Astro.url.pathname === href(path) ? 'page' : undefined}>{label}</a>)}<button class="theme-toggle" aria-label="配色を切り替え">◐</button></div></nav>
+<script>
+ document.querySelectorAll('.theme-toggle').forEach(button => button.addEventListener('click', () => { const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'; document.documentElement.dataset.theme = theme; localStorage.setItem('starlight-theme',theme); }));
+</script>

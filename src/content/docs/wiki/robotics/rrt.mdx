@@ -1,0 +1,23 @@
+---
+title: RRTによる経路探索の基礎
+description: RRTは空間から点をサンプリングし、最近傍ノードから少しずつ探索木を伸ばします。この例は円形障害物に対して線分の衝突判定を行います。乱数seedや刻み幅を変えて探索の違いを観察しましょう。最短経路は保証しません。
+---
+import PythonRunner from '@components/PythonRunner.astro';
+
+## 探索木をランダムに伸ばす
+
+RRTは空間から点をサンプリングし、最近傍ノードから少しずつ探索木を伸ばします。この例は円形障害物に対して線分の衝突判定を行います。乱数seedや刻み幅を変えて探索の違いを観察しましょう。最短経路は保証しません。
+
+$$
+q_{new}=q_{near}+\min(\epsilon,\|q_{rand}-q_{near}\|)\frac{q_{rand}-q_{near}}{\|q_{rand}-q_{near}\|}
+$$
+
+## 実行して確かめる
+
+コードを編集して **Run** を押してください。初回は実行環境のダウンロードに時間がかかります。
+
+<PythonRunner code={"import numpy as np\nimport matplotlib.pyplot as plt\nrng = np.random.default_rng(7)\nstart, goal = np.array([0.05, 0.05]), np.array([0.95, 0.95])\nnodes = [start]\nedges = []\n# 円形障害物と線分の距離で衝突を判定\ncenter, radius = np.array([0.5, 0.5]), 0.18\ndef collision(a, b):\n    delta = b - a\n    t = np.clip(np.dot(center-a, delta) / np.dot(delta, delta), 0, 1)\n    return np.linalg.norm(a + t*delta - center) <= radius\nfound = False\nfor _ in range(1000):\n    sample = goal if rng.random() < 0.1 else rng.random(2)\n    distances = [np.linalg.norm(p-sample) for p in nodes]\n    i = int(np.argmin(distances))\n    delta = sample - nodes[i]\n    length = np.linalg.norm(delta)\n    if length < 1e-10:\n        continue\n    new = nodes[i] + delta / length * min(0.07, length)\n    if collision(nodes[i], new):\n        continue\n    edges.append((i, len(nodes)))\n    nodes.append(new)\n    if np.linalg.norm(new-goal) < 0.07 and not collision(new, goal):\n        edges.append((len(nodes)-1, len(nodes)))\n        nodes.append(goal)\n        found = True\n        break\nfig, ax = plt.subplots()\nfor a, b in edges:\n    ax.plot([nodes[a][0], nodes[b][0]], [nodes[a][1], nodes[b][1]], color=\"#b8cbb8\", linewidth=.7)\nif found:\n    parents = {b:a for a,b in edges}\n    current = len(nodes)-1\n    path = [nodes[current]]\n    while current != 0:\n        current = parents[current]\n        path.append(nodes[current])\n    path = np.array(path)\n    ax.plot(path[:,0], path[:,1], color=\"seagreen\", linewidth=2)\nax.add_patch(plt.Circle(center, radius, color=\"gray\", alpha=.4))\nax.scatter(*start, label=\"start\")\nax.scatter(*goal, label=\"goal\")\nax.set_aspect(\"equal\")\nax.legend()\nprint(\"goal reached:\", found, \"nodes:\", len(nodes))\nplt.show()"} />
+
+## 試してみよう
+
+数値やパラメータを変更し、式が予測する結果と出力を比較してください。セルの変数は実行ごとに初期化されます。

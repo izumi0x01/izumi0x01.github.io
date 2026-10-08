@@ -1,0 +1,28 @@
+---
+title: Interactive Wiki
+description: 数式とコードで学ぶ、日本語の技術ノート。
+---
+import { LinkCard, CardGrid } from '@astrojs/starlight/components';
+import { href } from '../../../data/site';
+
+理論を読み、コードを編集し、結果を確かめるための技術Wikiです。
+
+## はじめに
+
+Pythonセルはブラウザ内のWeb Workerで実行されます。コードは外部のPythonサーバーへ送信されません。初回のみCDNからPython・NumPy・Matplotlibを読み込みます。
+
+<CardGrid>
+<LinkCard title="NumPy配列の基本" href={href('wiki/python/numpy/')} description="配列とベクトル演算を試す" />
+<LinkCard title="Matplotlib" href={href('wiki/python/matplotlib/')} description="正弦波を編集して描画する" />
+<LinkCard title="順運動学" href={href('wiki/robotics/kinematics/')} description="2リンクアームの手先位置を計算" />
+<LinkCard title="RRT経路探索" href={href('wiki/robotics/rrt/')} description="障害物を避ける探索木を可視化" />
+</CardGrid>
+
+## 実行環境について
+
+- セル間の変数は独立し、毎回初期化します。ランタイムとライブラリはページ内で再利用します。
+- 同時に実行できるセルは1つです。StopでWorkerを終了できます。
+- 実行は30秒、初期ダウンロードは180秒でタイムアウトします。
+- 標準出力は100,000文字、グラフは12枚までです。図は毎回破棄します。
+- 大規模な計算はブラウザのメモリを消費します。ブラウザがWorkerを終了した場合は再実行してください。
+- Pythonからのネットワークアクセスはブラウザの制約に従います。機密情報の入力は避けてください。

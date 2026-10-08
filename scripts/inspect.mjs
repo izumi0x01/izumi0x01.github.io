@@ -1,0 +1,14 @@
+import { chromium } from '@playwright/test';
+const browser=await chromium.launch();const page=await browser.newPage();
+page.on('pageerror',e=>console.log('PAGE ERROR',e.message));
+await page.goto('http://localhost:4321/wiki/python/numpy/');
+console.log('sidebar',await page.locator('.sidebar-content').isVisible());
+await page.screenshot({path:'/tmp/wiki-desktop.png'});
+await page.locator('button[data-open-modal]').click({timeout:5000});
+await page.waitForTimeout(1000);
+console.log('inputs',await page.locator('input').evaluateAll(inputs=>inputs.map(i=>[i.type,i.outerHTML])));
+await page.screenshot({path:'/tmp/wiki-search.png'});
+await page.setViewportSize({width:390,height:844});await page.goto('http://localhost:4321/wiki/python/matplotlib/');await page.screenshot({path:'/tmp/wiki-mobile.png'});
+console.log('mobile overflow',await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth));
+await page.goto('http://localhost:4321/');await page.screenshot({path:'/tmp/home-mobile.png'});
+await browser.close();
