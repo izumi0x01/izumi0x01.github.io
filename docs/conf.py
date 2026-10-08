@@ -31,3 +31,4 @@ def setup(app):
 jupyterlite_dir = str(Path(__file__).parent)
 
 jupyterlite_config = str(Path(__file__).parent / 'jupyter_lite_config.py')
+jupyterlite_silence = False
