@@ -5,7 +5,7 @@ sys.path.insert(0, str(Path(__file__).parent / '_ext'))
 project = 'Izumi | Research & Wiki'
 author = 'Izumi'
 language = 'ja'
-extensions = ['myst_parser', 'sphinx.ext.mathjax', 'pycafe']
+extensions = ['myst_parser', 'sphinx.ext.mathjax', 'pycafe', 'jupyterlite_sphinx', 'python_interactive']
 myst_enable_extensions = ['dollarmath', 'amsmath', 'colon_fence']
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
@@ -27,3 +27,7 @@ def hide_generated_page_edit_links(app, pagename, templatename, context, doctree
         context['display_vcs_links'] = False
 def setup(app):
     app.connect('html-page-context', hide_generated_page_edit_links)
+
+jupyterlite_dir = str(Path(__file__).parent)
+
+jupyterlite_config = str(Path(__file__).parent / 'jupyter_lite_config.py')

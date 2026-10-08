@@ -1,0 +1,11 @@
+.python-interactive {margin: 1.5em 0; background: #f7f7f7; min-width: 0;}
+.python-controls {display: flex; align-items: center; gap: .7em; padding: .4em .7em; flex-wrap: wrap; font-size: .85em;}
+.python-controls button {cursor: pointer; padding: .2em .6em;}
+.python-status {color: #555;}
+.python-editor .cm-editor {font-size: 13px; background: #f7f7f7;}
+.python-editor .cm-scroller {overflow-x: auto; overflow-y: hidden;}
+.python-output:empty {display: none;}
+.python-output {padding: .7em; background: white; overflow-wrap: anywhere;}
+.python-output pre {white-space: pre-wrap; margin: 0; background: transparent; border: 0;}
+.python-output img {display: block; max-width: 100%; height: auto; margin: .5em 0;}
+.python-runtime {display: none;}
