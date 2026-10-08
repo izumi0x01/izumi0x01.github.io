@@ -3,3 +3,7 @@ dist/
 .astro/
 playwright-report/
 test-results/
+
+__pycache__/
+wiki/_build/
+.venv/

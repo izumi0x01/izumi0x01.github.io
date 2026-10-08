@@ -1,4 +1,432 @@
 odexへの開発指示：Research Portfolio & Interactive Technical Wiki
+n Wiki
+
+## 1. 概要
+
+GitHub Pages（`username.github.io`）で公開する、研究者の個人ホームページを作成してください。
+
+サイトは以下の2ページ構成とします。
+
+1. **HOME**：個人プロフィール・研究内容・研究業績をすべて掲載
+2. **Wiki**：Sphinx + Read the Docs Themeによる技術ドキュメント
+
+デザインは「Simple is Best」を最優先としてください。
+
+独自の凝ったデザインや複雑なフレームワークは不要です。既存のGitHub Pages向け研究者テンプレートを参考に、シンプルで長期間メンテナンスできるサイトにしてください。
+
+**最重要機能は、Wikiの文章中でPythonコードを編集・実行し、Matplotlibのグラフをページ内に表示できることです。**
+
+## 2. 技術スタック
+
+### HOME
+
+- HTML / CSS
+- 必要最小限のJavaScript
+- GitHub Pages向けの軽量な研究者ホームページテンプレート
+
+参考候補：
+
+- academicpages/academicpages.github.io
+- alshedivat/al-folio
+
+これらを比較してください。ただし、テンプレートをそのまま導入して不要な機能や複雑な依存関係が増える場合は、シンプルなHTML/CSSで実装して構いません。
+
+優先順位は、保守性、シンプルさ、読みやすさです。
+
+### Wiki
+
+以下を使用してください。
+
+- Sphinx
+- sphinx_rtd_theme
+- MyST-Parser（Markdown対応）
+- MathJax（LaTeX数式）
+- Pyodide（Python実行）
+- NumPy
+- Matplotlib
+
+必要に応じてCodeMirrorなどのコードエディタを利用してください。
+
+Astro、Next.js、Reactなどは原則として使用しないでください。
+
+## 3. 全体レイアウト
+
+サイトの右上に表示するグローバルメニューは、以下の2項目のみです。
+
+```text
+                          HOME    Wiki
+------------------------------------------------
+
+            Page Content
+```
+
+- HOME：`/`
+- Wiki：`/wiki/`
+
+不要なメニューやリンクをヘッダーに追加しないでください。
+
+HOMEでは右上のメニューを固定的に表示します。
+
+WikiではSphinxの標準レイアウトを維持し、必要最小限の変更でHOMEとWikiを行き来できるようにしてください。
+
+両ページのデザインを完全に一致させる必要はありません。
+
+## 4. HOMEページ
+
+HOMEは1ページ完結型にしてください。
+
+About、Publications、Researchなどを別ページに分割しないでください。
+
+以下を縦方向に配置してください。
+
+### Profile
+
+- 研究者の写真
+- 氏名（英語・日本語）
+- 所属大学
+- 研究室
+- 学位・所属課程
+- 研究分野
+- メールアドレス
+- GitHub
+- ORCID
+- Google Scholar
+
+研究者の写真はページ上部に表示します。
+
+写真が未設定の場合は、シンプルなプレースホルダーを表示してください。
+
+### Research Interests
+
+研究分野と研究テーマについて簡潔に記述します。
+
+### Research Projects
+
+各研究について、タイトル、概要、画像、関連論文へのリンクを掲載できるようにしてください。
+
+### Publications
+
+研究業績を新しい順に並べてください。
+
+以下の分類に対応してください。
+
+- Journal Papers
+- Conference Papers
+- Domestic Conferences
+- Other Publications
+
+各業績には以下を表示してください。
+
+- 著者
+- 論文タイトル
+- 会議名・雑誌名
+- 発表年
+- DOI（存在する場合）
+- PDF（存在する場合）
+- BibTeX（存在する場合）
+
+BibTeXやYAMLなど、編集しやすいファイルから業績を管理できる設計が望ましいです。
+
+### Education / Experience
+
+- 学歴
+- 研究歴
+- 職歴（必要に応じて）
+
+### Awards
+
+受賞歴を掲載します。
+
+### Contact
+
+メールアドレスや研究者プロフィールへのリンクを掲載します。
+
+### デザイン
+
+- 白背景
+- 黒・グレーを中心とした配色
+- 研究者の写真を目立つ位置に表示
+- 文字を読みやすくする
+- アニメーション不要
+- 不要な装飾は追加しない
+- スマートフォン対応
+
+サンプル情報は明確に仮データと分かるようにしてください。
+
+## 5. Wikiページ
+
+WikiにはSphinxを使用します。
+
+テーマは必ず以下を使用してください。
+
+```python
+html_theme = "sphinx_rtd_theme"
+```
+
+デザインはRead the Docsの標準テーマを原則そのまま採用してください。
+
+参考：
+
+https://www.sphinx-doc.org/
+
+https://github.com/readthedocs/sphinx_rtd_theme
+
+### レイアウト
+
+```text
+┌───────────────────┬──────────────────────────────┐
+│ Wiki              │ HOME    Wiki                  │
+│                   ├──────────────────────────────┤
+│ Search            │                              │
+│                   │  Matplotlib Basics           │
+│ Introduction      │                              │
+│ Python            │  Explanation                 │
+│   NumPy           │                              │
+│   Matplotlib      │  Python Code                 │
+│ Robotics          │                              │
+│   Kinematics      │  [ Run ]  [ Reset ]           │
+│   Dynamics        │                              │
+│   RRT             │  Graph Output                │
+│ Mathematics       │                              │
+│                   │                              │
+└───────────────────┴──────────────────────────────┘
+```
+
+### 必須機能
+
+- 左側のサイドバー
+- 階層的な目次
+- サイト内検索
+- 日本語・英語表示
+- Markdown対応
+- LaTeX数式
+- コードのシンタックスハイライト
+- 前後の記事へのナビゲーション
+- HOMEに戻るリンク
+
+Wiki全体の外観はSphinxの標準機能を活用し、独自CSSは必要最小限にしてください。
+
+フッターには標準の以下の表記を残してください。
+
+Built with Sphinx using a theme provided by Read the Docs.
+
+## 6. Pythonのインライン実行
+
+Wikiの最重要機能です。
+
+ユーザーが説明文を読みながら、Pythonコードをその場で変更・実行できるようにしてください。
+
+例：
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 10, 100)
+y = np.sin(x)
+
+plt.plot(x, y)
+plt.show()
+```
+
+このコードがWiki内に表示され、ユーザーがRunボタンを押すと、すぐ下にグラフが表示される仕組みを作成してください。
+
+### 必須仕様
+
+- Pythonコードを直接編集可能
+- Runボタン
+- Resetボタン
+- 標準出力の表示
+- エラー・例外の表示
+- Matplotlibのグラフをセル直下に表示
+- NumPyが使用可能
+- 同一ページに複数の実行セルを配置可能
+- 初回ロード時の進行状況表示
+- スマートフォン対応
+
+Python実行にはPyodideを使用してください。
+
+**GitHub Pagesは静的サイトなので、Pythonコードは閲覧者のブラウザ内で実行してください。**
+
+通常のPythonサーバーや有料APIは使用しないでください。
+
+### 実装方針
+
+まず、Sphinxと互換性のある既存の実行セル機能（Thebe、JupyterLiteなど）を調査してください。
+
+ただし、外部Binderサーバーに依存する構成は採用しないでください。
+
+JupyterLiteやThebeを採用する場合も、ブラウザ内Pythonカーネルで動作することを確認してください。
+
+既存ライブラリの導入が複雑になる場合は、Pyodideと最小限のJavaScriptで専用コンポーネントを作成してください。
+
+以下の点に注意してください。
+
+- MatplotlibのSVGまたはPNG出力を表示する
+- 再実行時に古いグラフを適切に消去する
+- Python例外を画面内に表示する
+- 複数セルの変数共有方式を明確化する
+- Pyodideを必要以上に繰り返し初期化しない
+- 実行中のUIフリーズを防ぐ
+- 長時間実行するコードの停止・リセット方法を検討する
+- 静的サイトの制約内で実装する
+
+### Sphinx記事からの利用
+
+`.md` または `.rst` ファイルの中に、簡単な記述で実行セルを埋め込めるようにしてください。
+
+例えば、次のようなMarkdownディレクティブで記述できる方式が理想です。
+
+````markdown
+# Matplotlibの基本
+
+正弦波を描画してみましょう。
+
+```{python-run}
+import numpy as np
+import matplotlib.pyplot as plt
+
+x = np.linspace(0, 10, 100)
+plt.plot(x, np.sin(x))
+plt.show()
+```
+````
+
+`python-run` は目標とする独自ディレクティブ名です。必要に応じてSphinx拡張として実装してください。
+
+Wikiの執筆者がJavaScriptやHTMLを書かずにPython実行セルを追加できるようにすることが重要です。
+
+## 7. Wikiのサンプル記事
+
+以下を作成してください。
+
+```text
+Wiki
+├── Introduction
+├── Python
+│   ├── NumPy
+│   ├── Matplotlib
+│   └── Python Basics
+├── Robotics
+│   ├── Kinematics
+│   ├── Dynamics
+│   └── RRT
+└── Mathematics
+    └── Linear Algebra
+```
+
+記事本文は日本語とし、SphinxのMarkdown形式で管理してください。
+
+Matplotlibの記事には、少なくとも以下の実行例を用意してください。
+
+1. 正弦波の描画
+2. 複数グラフの描画
+3. 散布図の描画
+
+数式とPythonの実行結果を同じページで確認できるようにしてください。
+
+## 8. ファイル構造
+
+推奨構成：
+
+```text
+username.github.io/
+├── index.html
+├── assets/
+│   ├── css/
+│   ├── images/
+│   └── js/
+├── data/
+│   ├── profile.yml
+│   ├── publications.bib
+│   └── research.yml
+├── wiki/
+│   ├── conf.py
+│   ├── index.md
+│   ├── python/
+│   │   ├── numpy.md
+│   │   └── matplotlib.md
+│   ├── robotics/
+│   │   ├── kinematics.md
+│   │   ├── dynamics.md
+│   │   └── rrt.md
+│   └── mathematics/
+│       └── linear_algebra.md
+├── requirements.txt
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+└── README.md
+```
+
+必要に応じて構造を変更して構いません。
+
+ただし、GitHub Pagesで正しく公開できるよう、Sphinxのソースと生成されたHTMLの配置を区別してください。
+
+HOMEのプロフィールや業績のデータファイルは、ビルド時にHTMLへ反映されるようにしてください。
+
+## 9. デプロイ
+
+GitHub Pagesで公開します。
+
+GitHub Actionsを用いて次の処理を自動化してください。
+
+1. リポジトリを取得
+2. 必要なPython依存パッケージをインストール
+3. SphinxのWikiをHTMLへビルド
+4. HOMEとWikiの生成物を統合
+5. GitHub Pagesにデプロイ
+
+公開後の構成：
+
+```text
+https://username.github.io/
+https://username.github.io/wiki/
+```
+
+GitHub Pagesでの公開に必要な設定をREADMEに記載してください。
+
+## 10. テスト
+
+必ず以下を確認してください。
+
+- HOMEが表示される
+- HOMEにプロフィールと業績が表示される
+- 写真が表示される
+- 右上のメニューがHOMEとWikiだけである
+- WikiでRead the Docs Themeが適用される
+- Sphinxの検索が動作する
+- Markdown記事が表示される
+- LaTeX数式が表示される
+- Pythonコードを編集できる
+- RunボタンでPythonが実行される
+- NumPyが使用できる
+- Matplotlibのグラフがセル直下に表示される
+- Pythonエラーが表示される
+- 複数セルを利用できる
+- GitHub Pagesの公開パスで動作する
+
+Pythonの動作については、可能な限りPlaywright等を使ったブラウザテストも実施してください。
+
+## 11. 最重要方針
+
+以下の優先順位を厳守してください。
+
+1. シンプルな研究者ホームページ
+2. HOMEにすべての個人情報・研究業績を集約
+3. HOMEとWikiだけのナビゲーション
+4. WikiはSphinx + Read the Docs Theme
+5. Wiki内でPythonとMatplotlibを実行可能
+6. GitHub Pagesで無料公開
+7. 容易な更新と保守
+
+見た目のために依存関係や複雑な構成を増やさないでください。
+
+完成イメージではなく、実際にビルド・公開できるコードを作成してください。
+
+既存リポジトリがある場合は、構造を確認し、既存ファイルを必要以上に削除しないでください。
+
+未実装の機能を実装済みと報告しないでください。
 
 ## 1. プロジェクト概要
 
@@ -354,3 +782,4 @@ VercelやCloudflare Pagesへ移行しやすい構造を維持してください�
 **最重要要件は、研究者の個人サイトとして公開できることと、閲覧者がWiki記事内でPythonコードを編集・実行し、Matplotlibの結果をその場で確認できることです。**
 
 技術的な制約で実現できない部分がある場合は、動作しないダミー実装で代用せず、その制約と現実的な代替案を明示してください。
+

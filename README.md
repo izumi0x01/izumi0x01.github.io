@@ -1,80 +1,78 @@
 # Research Portfolio & Interactive Wiki
 
-Astro / Starlightによる研究者サイトと、日本語の実行可能な技術Wikiです。要件原文は `readme.md` に保存しています。プロフィール・研究テーマ・論文は編集用サンプルです。架空の論文は明示しており、実在する本人の実績ではありません。
+HOME一枚とSphinx + Read the Docs Themeの技術Wikiです。`readme.md`には相反する2案があるため、先頭の「最重要方針」に従いSphinx版を採用しました。旧Astroソースは保存していますが、公開物はPythonビルドで生成します。
 
-## 起動
+## 起動とビルド
 
-Node.js 22.12以上（推奨22）を使用します。
-
-```sh
-npm ci
-npm run dev
-```
-
-http://localhost:4321 を開いてください。
+Python 3.10以上を使用します（GitHub Actionsは3.12）。
 
 ```sh
-npm run check
-npm run build
-npm run preview
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.txt
+python3 scripts/build.py
+python3 scripts/preview.py
 ```
 
-## 編集方法
+`http://localhost:4321/`でHOME、`/wiki/`でWikiを表示します。ソースは`wiki/`、公開物は`dist/`です。ビルドは生成物の`dist/`を置き換えます。
 
-- `src/data/site.ts`: プロフィール、連絡先、CV、ナビゲーション、研究テーマ、プロジェクト、論文。論文はIDで研究テーマと関連付け、単一の配列で管理します。DOI/PDFが未登録の場合はリンクを表示しません。BibTeX表示・コピー、年別表示、種類別フィルターに対応しています。
-- `src/content/docs/wiki/`: 記事をMarkdown / MDXで追加するとページ・サイドバー・検索に反映されます。
-- `public/`: 写真、動画、PDFなど。データのimageフィールドにファイル名、videoにURLを指定します。現在の画像は概念図です。
-- `src/styles/global.css`: 共通の配色、レイアウト、モバイル表示。
+## 更新
 
-Wikiで数式は `$...$` または `$$...$$` を使います。実行セルはMDXから以下のように利用できます。
+- `data/profile.yml`: 氏名、大学、研究室、学位、分野、連絡先、経歴、受賞歴。未登録項目は明示します。
+- `data/research.yml`: 研究テーマ、画像、関連Wiki、論文ID。
+- `data/publications.yml`: 著者、題名、媒体、年、種別、DOI、PDF、BibTeX。年の降順に表示します。種別は`journal`、`conference`、`domestic`、`other`。
+- `public/`: 写真・画像・PDF。`photo`にはファイル名を指定。未設定の場合はプレースホルダーを表示します。
+- `wiki/**/*.md`: 日本語MyST Markdown記事。英語も併記できます。新記事を各`index.md`のtoctreeへ追加します。
 
-```mdx
----
-title: 実行例
----
-import PythonRunner from '@components/PythonRunner.astro';
+サンプル研究と架空論文は実在する本人の実績ではありません。
 
-<PythonRunner code={`import numpy as np
-print(np.arange(5))`} />
+## 実行セル
+
+記事に以下を書きます。rstでも`.. python-run::`を使えます。
+
+````markdown
+```{python-run}
+import numpy as np
+import matplotlib.pyplot as plt
+x = np.linspace(0, 10, 100)
+plt.plot(x, np.sin(x))
+plt.show()
 ```
+````
 
-## Python実行の設計
+数式は`$...$`または`$$...$$`でMathJax表示。コードは編集可能なtextarea、Run / Stop / Reset / Copyを備えます。標準のコードブロックはSphinxがシンタックスハイライトします。
 
-CodeMirror 6で編集し、必要時にモジュール型Web Workerを起動します。Pyodide 314.0.7、NumPy、MatplotlibはjsDelivrから取得します。Pythonコードを実行サーバーに送信しません。初回読込には通信が必要で、数十MB以上のダウンロードが発生します。オフライン初回実行は対応していません。
+Pyodide 314.0.7 / NumPy / Matplotlibを必要時にCDNから取得し、Web Workerで実行。初回は通信が必要です。コードはPython実行サーバーへ送信しません。ランタイムはページ内で再利用しますが、セルの変数は毎回独立します。モジュールの状態は共有します。実行は直列、図はPNGで各セル直下に表示し、再実行時に出力を消します。
 
-ランタイムはページ内で共有しますが、セルのグローバル変数は毎回新しい辞書に分離します。インポートしたモジュール自体の状態は共有されるため、完全なセキュリティ分離ではありません。実行は直列です。標準出力・標準エラー・例外を捕捉し、MatplotlibのAggバックエンドからPNGを返します。show時と実行終了時に図を回収・閉鎖するため再実行で図が蓄積しません。
-
-Stopと30秒タイムアウトはWorkerを終了し、次回に環境を再生成します。初期化の上限は180秒です。標準出力は100,000文字、図は12枚まで。メモリ使用量に厳密な上限を設ける仕組みはなく、大規模な配列や図はブラウザのメモリ不足を起こす可能性があります。ブラウザのネットワーク・ファイルアクセス制約が適用されます。
+Stopと30秒上限はWorkerを終了し、次回再初期化します。初期化上限180秒、出力100,000文字、図12枚。メモリ量の厳密な制限はありません。
 
 ## GitHub Pages
 
-1. このプロジェクトをGitHubにpushします（既定ブランチ `main`）。
-2. リポジトリの Settings → Pages → Source を **GitHub Actions** に設定します。
-3. `.github/workflows/deploy.yml` がcheck・build後に公式Pages Actionsで公開します。
+`.github/workflows/deploy.yml`がmainへのpushでビルド・公式Pages Actionsで公開します。Settings → Pages → Sourceを**GitHub Actions**にしてください。
 
-`username.github.io` と通常リポジトリ配下のサブパスの双方に対応します。Actionsが公開先のorigin/base_pathを取得します。ローカルでサブパスを検証する場合:
+公開先は`https://izumi0x01.github.io/`と`https://izumi0x01.github.io/wiki/`。通常のリポジトリのサブパスも`BASE_PATH`で対応します。
 
 ```sh
-BASE_PATH=/research SITE_URL=https://example.github.io npm run build
-npm run preview
-# http://localhost:4321/research/ を開く
+BASE_PATH=/research python3 scripts/build.py
 ```
 
-他の静的ホスティングにも `dist/` を配置できます。`SITE_URL` と `BASE_PATH` を公開先に合わせてください。GitHub Pagesの公開状況はリポジトリのActionsとSettings → Pagesで確認できます。
+`BASE_PATH=/research python3 scripts/check_links.py`で生成したリンクも検証できます。
 
-## ブラウザテスト
+`dist/`を`/research/`へ配置してください。Wiki内は相対リンクで動作します。
+
+## 検証
 
 ```sh
+npm ci
 npm exec playwright install chromium
-npm run build
+python3 scripts/build.py
 npm test
 ```
 
-Playwrightで各ページ、業績フィルター、モバイル幅、KaTeX、実際のPyodide / NumPy / Matplotlib、複数セル、例外、Reset、再実行、Stop、Wiki検索を検証します。PythonテストではCDNへのアクセスが必要です。検索はビルド後のpreviewで検証してください。
+PlaywrightはHOME、メニュー、モバイル、Sphinx検索、MathJax、実際のPython / NumPy / Matplotlib、複数セル、例外、再実行、Reset、Stopを確認します。CDN接続が必要です。
 
-## 公式ドキュメント
+## 採用方式の比較
 
-- [Astro](https://docs.astro.build/)
-- [Starlightの導入・サブパス設定](https://starlight.astro.build/manual-setup/)
-- [PyodideのWeb Worker](https://pyodide.org/en/stable/usage/webworker.html)
-- [CodeMirror](https://codemirror.net/docs/)
+[Academic Pages](https://academicpages.github.io/)は研究業績・CV等の複数ページに強く、[al-folio](https://github.com/alshedivat/al-folio)もJekyllの研究者向けテーマです。今回はHOME一枚を維持するため、構造化データからHTML/CSSを生成します。
+
+[Thebe](https://github.com/jupyter-book/thebe)はthebe-liteでJupyterLiteを利用でき、[JupyterLite](https://jupyterlite.readthedocs.io/en/stable/howto/configure/kernels.html)にはブラウザ内Pyodideカーネルがあります。既存Workerを再利用して依存を増やさず、[Sphinx拡張API](https://www.sphinx-doc.org/en/master/extdev/appapi.html)による小さな独自ディレクティブを採用しました。Binderは不要です。
