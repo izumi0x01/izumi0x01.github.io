@@ -26,6 +26,23 @@ python3 scripts/preview.py
 
 サンプル研究と架空論文は実在する本人の実績ではありません。
 
+## ブラウザからWikiを編集・公開
+
+ローカル編集や手動のGit Pushは不要です。
+
+1. 公開Wikiの記事上部の **Edit on GitHub** をクリックします。
+2. リポジトリに書き込み権限を持つ管理者のGitHubアカウントでログインします。
+3. Markdownを編集し、**Commit changes...** から`main`へCommitします。
+4. GitHub Actionsが自動でSphinxをビルドし、GitHub Pagesへ公開します。[Actions](https://github.com/izumi0x01/izumi0x01.github.io/actions)で結果を確認できます。
+
+ブランチ保護により直接Commitできない場合は、ブラウザ上でブランチを作成し、Pull Requestを`main`へマージすると自動公開されます。GitHubのMarkdownプレビューはMySTの数式・独自ディレクティブを完全には再現しないため、公開後のWikiでも確認してください。
+
+リンクは公開されていますが、サイトから編集権限を付与しません。一般閲覧者は元リポジトリへCommitできません。公開リポジトリのForkやPull RequestはGitHubの標準機能であり、管理者がマージするまで公開サイトへ反映されません。追加の認証サーバーやアクセストークンのサイトへの埋め込みは不要です。[GitHub標準の編集機能](https://docs.github.com/en/repositories/working-with-files/managing-files/editing-files)を使用します。
+
+記事は引き続き`wiki/**/*.md`に保存し、Sphinx設定・テンプレート・実行環境は`wiki/conf.py`、`wiki/_templates/`、`wiki/_ext/`、`wiki/_static/`に分離しています。将来Decap CMSなどを追加する際も、同じMarkdownを編集対象にでき、既存のCommit → Actions → 公開の流れを再利用できます。CMSの管理者認証は導入時に別途設定します。現時点ではCMSは導入していません。
+
+編集先のリポジトリ・ブランチは`wiki/conf.py`の`html_context`で管理し、[テーマ標準の編集リンク](https://sphinx-rtd-theme.readthedocs.io/en/stable/configuring.html#vcs-pageview-mode)を使用しています。
+
 ## 実行セル
 
 記事に以下を書きます。rstでも`.. python-run::`を使えます。
