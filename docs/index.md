@@ -14,7 +14,7 @@
 
 研究分野：Robotics / Numerical Computing / Motion Planning
 
-写真は未登録です。実際の写真を`_static/images/`に配置し、上の画像パスを変更してください。
+写真は未登録です。
 
 ## Research Interests
 
@@ -29,8 +29,7 @@
 
 ## Publications
 
-実在する研究業績は未登録です。旧データの架空サンプル論文は公開業績に含めていません。
-各分類内で新しい順に追記してください。DOI、PDF、GitHub等のリンクをMarkdownで記載できます。
+研究業績は未登録です。
 
 ### Journal Papers
 
