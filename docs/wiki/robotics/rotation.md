@@ -10,27 +10,18 @@ $$
 
 ## 実行して確かめる
 
-コードを編集して **Shift+Enter** を押してください。初回は実行環境のダウンロードに時間がかかります。
+以下のPyCafeアプリで実行結果を確認できます。コードを編集するには **Edit on PyCafe** を開いてください。初回は実行環境のダウンロードに時間がかかります。
 
-```{replite}
-:kernel: python
-:height: 450px
-:execute: False
+```{literalinclude} ../../../pycafe/rotation/app.py
+:language: python
+```
 
-import numpy as np
-import matplotlib.pyplot as plt
-theta = np.pi / 3
-R = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
-p = np.array([1., 0.])
-q = R @ p
-print("rotated:", q)
-plt.plot([0, p[0]], [0, p[1]], label="original")
-plt.plot([0, q[0]], [0, q[1]], label="rotated")
-plt.axis("equal")
-plt.legend()
-plt.show()
+```{pycafe}
+:source: rotation
+:height: 500px
+:title: 二次元平面上の回転運動のPython実行例
 ```
 
 ## 試してみよう
 
-数値やパラメータを変更し、式が予測する結果と出力を比較してください。各実行セルはそれぞれのPythonカーネルで実行されます。
+数値やパラメータを変更し、式が予測する結果と出力を比較してください。各PyCafeアプリは独立した実行環境で動作します。

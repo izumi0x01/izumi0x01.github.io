@@ -1,183 +1,126 @@
-odex開発指示：Sphinxによる研究者ホームページとInteractive Wikiの統合
+odex開発指示：Sphinx WikiへのPyCafeインライン埋め込み
 
 ## 1. 目的
 
-研究者の個人ホームページと技術Wikiを、すべてSphinxで構築してください。
+既存のSphinx製研究者ホームページに、PyCafeによるPython実行環境を埋め込んでください。
 
-**HOMEとWikiで異なるWebフレームワークを使用しないでください。**
+現在の構成は以下のとおりです。
 
-サイト全体を以下の技術で構成します。
+- Sphinx：サイト全体の構築
+- sphinx_rtd_theme：Read the Docs形式のテーマ
+- MyST-Parser：Markdown記事
+- GitHub Pages：公開
+- GitHub Actions：CI/CD
 
-- Sphinx
-- sphinx_rtd_theme
-- MyST-Parser
-- jupyterlite-sphinx
-- jupyterlite-pyodide-kernel
-- NumPy / Matplotlib
-- GitHub Pages
-- GitHub Actions
+HOMEには研究者プロフィール、研究者の写真、研究内容、研究業績を掲載しています。
 
-研究者プロフィール・写真・研究内容・研究業績もSphinxで生成してください。
+Wikiは `/wiki/` 以下に配置されています。
 
-デザインはSimple is Bestを徹底し、Read the Docs Themeの標準デザインを最大限活用してください。
+これらの既存機能は維持してください。
 
-## 2. 既存リポジトリの確認
+今回変更するのはPython実行環境のみです。
 
-最初に現在のファイル構成を確認してください。
+**JupyterLite-SphinxからPyCafeへ移行します。**
 
-既存のSphinx設定、研究者情報、画像、Wiki記事、GitHub Actionsを確認し、再利用してください。
+## 2. PyCafeの採用
 
-既存ファイルを不必要に削除しないでください。
+PyCafe公式サイト：
 
-現在のHOMEがHTMLや別のフレームワークで作成されている場合は、必要な情報を保持しながらSphinxに統合してください。
+https://py.cafe/
 
-実在する研究業績、氏名、所属などを推測で生成しないでください。
+公式ドキュメント：
 
-## 3. サイト全体の構成
+https://py.cafe/docs
 
-サイト内のページは論理的に以下の2種類だけにしてください。
+PyCafeのiframe埋め込み機能を使用してください。
 
-- HOME
-- Wiki
+ブラウザ内のPython実行環境を自作しないでください。
 
-グローバルナビゲーションのメニューは、右上に `HOME` と `Wiki` の2項目だけ表示してください。
+### 重要な要件
 
-### HOME
+- Wikiの本文中にPython実行環境を配置する
+- 閲覧者がページから離れずにPythonを実行できる
+- NumPyを利用できる
+- Matplotlibのグラフを表示できる
+- 複数の実行環境を記事内に設置できる
+- GitHub Pagesで動作する
+- Pythonバックエンドサーバーを自前で用意しない
 
-URL：
+可能であれば、ユーザーがコードを編集できるPyCafeの共有画面を埋め込んでください。
 
-`https://username.github.io/`
+ただし、PyCafeがエディタ付き画面のiframe埋め込みを正式にサポートしていない場合は、アプリ埋め込みと「Edit on PyCafe」リンクを併用してください。
 
-HOMEには、以下の情報を1ページに集約します。
+非公式のURLパラメータや未検証の埋め込み方式に依存しないでください。
 
-1. Profile
-2. Research Interests
-3. Research Projects
-4. Publications
-5. Education
-6. Experience
-7. Awards
-8. Contact
+## 3. Sphinxへの埋め込み方法
 
-各セクションを別ページに分割しないでください。
+PyCafeのiframeをSphinxの記事中で利用できるようにしてください。
 
-HOMEの上部には研究者の写真、氏名、所属、研究分野を配置してください。
+例えば、次の形式です。
 
-論文業績はJournal Papers、International Conferences、Domestic Conferencesなどの分類で掲載してください。
-
-DOI、PDF、GitHub、Google Scholar、ORCIDなどへのリンクを設置できるようにしてください。
-
-業績は新しい順に表示してください。
-
-### Wiki
-
-URL：
-
-`https://username.github.io/wiki/`
-
-Sphinxの標準的なドキュメントサイトとして構成してください。
-
-- 左側に階層的なサイドバー
-- 検索
-- Markdown記事
-- LaTeX数式
-- Pythonコード
-- Matplotlib実行結果
-
-Wiki記事はMyST Markdownで管理してください。
-
-## 4. デザイン
-
-SphinxのRead the Docs Themeをすべてのページに適用してください。
-
-```python
-html_theme = "sphinx_rtd_theme"
+```html
+<iframe
+  src="https://py.cafe/embed/USER/PROJECT"
+  width="100%"
+  height="500"
+  style="border: 0;"
+  loading="lazy"
+  title="Interactive Python Example">
+</iframe>
 ```
 
-HOMEについては、研究者の写真とプロフィールを見やすく配置するために必要な最小限のCSSを追加して構いません。
+`USER/PROJECT` は実際のPyCafeプロジェクトの情報に置き換えてください。
 
-ただし、テーマ全体を大幅に変更しないでください。
+上記URLは形式の例です。存在しないプロジェクトを動作確認済みとして扱わないでください。
 
-- 白背景
-- シンプルな文字と見出し
-- 余計なアニメーションなし
-- モバイル対応
-- 読みやすい業績一覧
-- 全ページでHOME / Wikiメニューを表示
+実際のPyCafeプロジェクトのShare → Embedから取得できる公式iframeコードを優先してください。
 
-右上のHOME / Wikiメニューは、Sphinxのテンプレート継承などを使い、全ページ共通のナビゲーションとして実装してください。
+## 4. Markdownから簡単に埋め込める仕組み
 
-標準テーマの検索、サイドバー、モバイルナビゲーションを壊さないでください。
+Sphinx Wikiの記事はMyST Markdownで執筆します。
 
-## 5. 研究者情報の管理
+毎回iframeのHTMLを直接記述するのは避けたいので、できれば専用のSphinxディレクティブを作成してください。
 
-研究者の氏名、写真、所属、研究分野、経歴、研究成果、受賞歴をSphinxで表示してください。
-
-基本的には `index.md` を編集するだけでHOMEの文章を更新できるようにしてください。
-
-研究業績が増えても管理しやすいように、BibTeXまたはYAMLで業績データを分離することも検討してください。
-
-ただし、複雑なCMSは導入しないでください。
-
-HOMEはSphinxから生成される単一のHTMLページとしてください。
-
-### 写真
-
-研究者の写真は `_static/images/profile.jpg` などの位置で管理してください。
-
-実際の写真が存在しない場合、他人の写真を勝手に使用しないでください。
-
-## 6. Pythonを実行できるWiki
-
-`jupyterlite-sphinx` を導入してください。
-
-Pyodideを使用し、GitHub Pages上でPythonを実行できるようにします。
-
-Pythonの実行環境にはサーバーを使用せず、閲覧者のブラウザ内で処理してください。
-
-`requirements.txt` には互換性を確認した以下のパッケージを含めてください。
-
-```text
-sphinx
-sphinx-rtd-theme
-myst-parser
-jupyterlite-sphinx
-jupyterlite-core
-jupyterlite-pyodide-kernel
-```
-
-### Sphinx設定
-
-`conf.py` に以下を追加してください。
-
-```python
-extensions = [
-    "myst_parser",
-    "jupyterlite_sphinx",
-]
-
-html_theme = "sphinx_rtd_theme"
-replite_auto_execute = False
-```
-
-既存の設定がある場合は統合してください。
-
-### Python実行セル
-
-Wiki記事内ではMyST Markdownの `replite` ディレクティブを使用してください。
-
-例えば以下のコードを実行可能にしてください。
+使用例：
 
 ````markdown
-# Matplotlibの基本
+# Matplotlib
 
-次のコードを編集して実行してください。
+以下のPythonコードを実行してください。
 
-```{replite}
-:kernel: python
-:height: 450px
-:execute: False
+```{pycafe}
+:project: USER/PROJECT
+:height: 500px
+```
+````
 
+この `{pycafe}` ディレクティブは、必要に応じて小規模なSphinx拡張として実装してください。
+
+要件：
+
+- PyCafeのプロジェクト識別子を指定できる
+- iframeの高さを変更できる
+- iframeの幅は100%にする
+- レスポンシブ表示
+- アクセシビリティ用title属性
+- 読み込みに失敗した場合のリンク表示
+- Markdownで簡単に再利用可能
+- プロジェクト識別子のバリデーション
+- 不正なHTML属性やスクリプトを注入できない設計
+
+過剰な機能や複雑な依存関係は追加しないでください。
+
+## 5. サンプル記事
+
+次のファイルを対象にしてください。
+
+`docs/wiki/python/matplotlib.md`
+
+記事中に、PyCafeで実行できるMatplotlibの例を追加してください。
+
+### サンプル1：正弦波
+
+```python
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -187,49 +130,48 @@ y = np.sin(x)
 plt.plot(x, y)
 plt.show()
 ```
-````
 
-実行セルについては以下を保証してください。
+### サンプル2：複数グラフ
 
-- コード編集
-- Python実行
-- 標準出力表示
-- エラー表示
-- NumPyの利用
-- Matplotlibグラフのインライン表示
-- 複数セルの設置
-- 外部Pythonサーバー不要
+```python
+import numpy as np
+import matplotlib.pyplot as plt
 
-独自のPythonエディタは開発せず、JupyterLite-Sphinxの標準機能を優先してください。
+x = np.linspace(0, 10, 100)
 
-## 7. Wiki記事の構成
+plt.plot(x, np.sin(x), label="sin")
+plt.plot(x, np.cos(x), label="cos")
 
-以下を初期コンテンツとして作成してください。
-
-```text
-wiki/
-├── index.md
-├── python/
-│   ├── index.md
-│   ├── numpy.md
-│   └── matplotlib.md
-├── robotics/
-│   ├── index.md
-│   ├── kinematics.md
-│   ├── dynamics.md
-│   └── rrt.md
-└── mathematics/
-    ├── index.md
-    └── linear_algebra.md
+plt.legend()
+plt.show()
 ```
 
-記事の編集はMarkdownだけでできるようにしてください。
+### サンプル3：散布図
 
-Matplotlibの記事には正弦波、複数グラフ、散布図の実行例を用意してください。
+```python
+import numpy as np
+import matplotlib.pyplot as plt
 
-## 8. ディレクトリ構造
+x = np.arange(10)
+y = x ** 2
 
-以下を基本構成としてください。
+plt.scatter(x, y)
+plt.show()
+```
+
+PyCafeが対応するWebアプリフレームワークを使用し、必要に応じてMatplotlibの描画結果をUI内で表示できる形式にしてください。
+
+単純な `plt.show()` がPyCafeで期待どおりに描画されない場合は、使用するフレームワークに適した描画方法へ変更してください。
+
+まず1つのサンプルで正常動作を確認してから、他のサンプルに展開してください。
+
+## 6. PyCafeプロジェクトの管理
+
+PyCafeのコードを外部サービスにのみ保存する方式では、後から管理しにくくなります。
+
+可能であればGitHubリポジトリにもPyCafe用のソースコードを保存してください。
+
+推奨構造：
 
 ```text
 repository/
@@ -237,124 +179,105 @@ repository/
 │   ├── conf.py
 │   ├── index.md
 │   ├── wiki/
-│   │   ├── index.md
-│   │   ├── python/
-│   │   ├── robotics/
-│   │   └── mathematics/
-│   ├── _static/
-│   │   ├── images/
-│   │   │   └── profile.jpg
-│   │   └── custom.css
-│   └── _templates/
+│   │   └── python/
+│   │       └── matplotlib.md
+│   └── _ext/
+│       └── pycafe.py
+│
+├── pycafe/
+│   ├── sine_wave/
+│   │   ├── app.py
+│   │   └── requirements.txt
+│   ├── multiple_plots/
+│   │   ├── app.py
+│   │   └── requirements.txt
+│   └── scatter_plot/
+│       ├── app.py
+│       └── requirements.txt
+│
 ├── requirements.txt
-├── .github/
-│   └── workflows/
-│       └── deploy.yml
-└── README.md
+└── .github/
+    └── workflows/
+        └── deploy.yml
 ```
 
-重要：HOMEとWikiは同一のSphinxプロジェクトとしてビルドしてください。
+GitHub上のコードとPyCafe上のプロジェクトは自動同期されると決めつけないでください。
 
-2つのSphinxプロジェクトに分割しないでください。
+自動同期が公式にサポートされていない場合は、更新手順をREADMEに明記してください。
 
-## 9. URL構造
+## 7. JupyterLite関連コードの整理
 
-公開URLは次の形式とします。
+従来のJupyterLite-SphinxをPyCafeに置き換えます。
 
-```text
-/
-└── index.html
+既存環境を調査し、利用しなくなった場合のみ以下を削除してください。
 
-/wiki/
-└── index.html
+- jupyterlite-sphinx
+- jupyterlite-core
+- jupyterlite-pyodide-kernel
+- Replite用の設定
+- JupyterLite専用の不要なアセット
 
-/wiki/python/matplotlib/
-└── index.html
-```
+既存のWiki記事や研究者ホームページを削除しないでください。
 
-Sphinxの `dirhtml` ビルダーを検討し、GitHub Pagesで上記URL構造を実現してください。
+## 8. HOMEの維持
 
-GitHub Pagesのルート公開と、必要に応じたサブパス公開の両方を考慮してください。
+HOMEは引き続きSphinxによって生成してください。
 
-## 10. Wiki記事の編集方法
+次の構成を維持してください。
 
-各Wiki記事に「Edit on GitHub」リンクを設けてください。
+- 研究者の写真
+- Profile
+- Research Interests
+- Research Projects
+- Publications
+- Education
+- Experience
+- Awards
+- Contact
 
-ブラウザからMarkdownを修正してCommitすると、GitHub Actionsによって自動更新されるようにしてください。
+右上のグローバルメニューはHOMEとWikiのみです。
 
-普段の更新ではローカルでのGit Pushを必要としない構成にしてください。
+デザインはシンプルにしてください。
 
-## 11. CI/CD
+PyCafe導入のためにHOMEのデザインを変更しないでください。
 
-GitHub Actionsを使用してください。
+## 9. GitHub Pages・CI/CD
 
-Pull Request時：
+GitHub ActionsによるSphinxビルドとGitHub Pagesへの自動デプロイを維持してください。
 
-- 依存関係のインストール
-- Sphinxビルド
-- リンクや構造の確認
-- 必要なテスト
+PyCafeのiframeが `/wiki/` 以下でも正常に表示されるようにしてください。
 
-mainへのPush時：
+Sphinxの静的HTMLビルドがPyCafeへの接続を必要としない構造にしてください。
 
-- SphinxによるHOMEとWikiの一括ビルド
-- JupyterLiteアセットの生成
-- GitHub Pagesへの自動デプロイ
+外部iframeを利用するため、PyCafe側の公開状態やサービス障害によって埋め込みが利用できなくなる可能性も考慮してください。
 
-CIに失敗した場合はデプロイしないでください。
+## 10. 動作確認
 
-GitHub Pagesの公式Actionsを使用してください。
+以下を確認してください。
 
-## 12. 動作確認
+1. Sphinxビルドが成功する
+2. HOMEの研究者情報が維持される
+3. WikiのRead the Docs Themeが維持される
+4. MyST MarkdownでPyCafeを埋め込める
+5. iframeが正しいサイズで表示される
+6. PyCafeプロジェクトが読み込まれる
+7. Pythonコードを実行できる
+8. Matplotlibグラフが表示される
+9. エディタを利用できる場合はコード編集が動作する
+10. モバイル画面でも利用可能
+11. GitHub Pages上でも動作する
 
-以下を検証してください。
+ブラウザで検証できない項目は、未検証であることを明記してください。
 
-### HOME
+## 11. 実装上の最重要方針
 
-- SphinxからHOMEが生成される
-- プロフィール写真が表示される
-- 研究者情報が表示される
-- 研究業績が表示される
-- 右上にHOMEとWikiだけが表示される
+- Sphinxを維持する
+- Read the Docs Themeを維持する
+- HOMEとWikiを同じSphinxプロジェクトで管理する
+- JupyterLite-SphinxをPyCafeに置き換える
+- PyCafeの公式iframe埋め込みを利用する
+- Python実行環境を自作しない
+- Markdownから簡単に埋め込めるようにする
+- GitHub Pagesで無料公開できる構成を維持する
 
-### Wiki
-
-- Read the Docs Themeが適用される
-- サイドバーが表示される
-- 検索が動作する
-- MyST Markdownが表示される
-- LaTeX数式が表示される
-
-### Python実行
-
-- JupyterLiteのPythonカーネルが起動する
-- Pythonコードを編集・実行できる
-- NumPyが動作する
-- Matplotlibグラフが表示される
-- Python例外が表示される
-
-### GitHub Pages
-
-- HOMEとWikiが正しいURLで公開される
-- JavaScriptとWebAssemblyが読み込まれる
-- ページの再読み込みで問題が発生しない
-
-実ブラウザで可能な限り動作確認してください。
-
-## 13. 開発方針
-
-最も重視するのは保守の簡単さです。
-
-- WebフレームワークはSphinxに統一する
-- HOMEは単一のMarkdownページ
-- Wikiは階層的なMarkdown記事
-- Python実行はJupyterLite-Sphinx
-- デザインはRead the Docs Theme
-- 公開はGitHub Pages
-- 更新はGitHub Actions
-
-React、Astro、Next.js、独自CMSを追加しないでください。
-
-機能を増やすより、シンプルで安定したサイトを完成させることを優先してください。
-
-最後に、変更ファイル、ビルド結果、ブラウザテスト結果、未解決の問題を報告してください。
+実装後は、変更ファイル、PyCafeの埋め込みURL、テスト結果、PyCafe側で必要な作業、残っている制約を報告してください。

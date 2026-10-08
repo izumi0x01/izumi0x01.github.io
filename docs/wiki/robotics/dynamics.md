@@ -10,28 +10,18 @@ $$
 
 ## 実行して確かめる
 
-コードを編集して **Shift+Enter** を押してください。初回は実行環境のダウンロードに時間がかかります。
+以下のPyCafeアプリで実行結果を確認できます。コードを編集するには **Edit on PyCafe** を開いてください。初回は実行環境のダウンロードに時間がかかります。
 
-```{replite}
-:kernel: python
-:height: 450px
-:execute: False
+```{literalinclude} ../../../pycafe/dynamics/app.py
+:language: python
+```
 
-import numpy as np
-import matplotlib.pyplot as plt
-dt = 0.01
-t = np.arange(0, 10, dt)
-x, v = 1., 0.
-positions = []
-for _ in t:
-    v += (-0.3*v - x)*dt
-    x += v*dt
-    positions.append(x)
-plt.plot(t, positions)
-plt.xlabel("time")
-plt.show()
+```{pycafe}
+:source: dynamics
+:height: 500px
+:title: ロボットの動力学のPython実行例
 ```
 
 ## 試してみよう
 
-数値やパラメータを変更し、式が予測する結果と出力を比較してください。各実行セルはそれぞれのPythonカーネルで実行されます。
+数値やパラメータを変更し、式が予測する結果と出力を比較してください。各PyCafeアプリは独立した実行環境で動作します。

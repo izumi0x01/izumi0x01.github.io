@@ -10,21 +10,18 @@ $$
 
 ## 実行して確かめる
 
-コードを編集して **Shift+Enter** を押してください。初回は実行環境のダウンロードに時間がかかります。
+以下のPyCafeアプリで実行結果を確認できます。コードを編集するには **Edit on PyCafe** を開いてください。初回は実行環境のダウンロードに時間がかかります。
 
-```{replite}
-:kernel: python
-:height: 450px
-:execute: False
+```{literalinclude} ../../../pycafe/artists/app.py
+:language: python
+```
 
-import matplotlib.pyplot as plt
-fig, ax = plt.subplots()
-line, = ax.plot([0, 1, 2], [0, 1, 4])
-ax.set_title("Figure > Axes > Artist")
-print(type(fig).__name__, type(ax).__name__, type(line).__name__)
-plt.show()
+```{pycafe}
+:source: artists
+:height: 500px
+:title: Artist・Axes・Figureの関係のPython実行例
 ```
 
 ## 試してみよう
 
-数値やパラメータを変更し、式が予測する結果と出力を比較してください。各実行セルはそれぞれのPythonカーネルで実行されます。
+数値やパラメータを変更し、式が予測する結果と出力を比較してください。各PyCafeアプリは独立した実行環境で動作します。

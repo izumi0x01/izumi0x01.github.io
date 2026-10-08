@@ -10,20 +10,18 @@ $$
 
 ## 実行して確かめる
 
-コードを編集して **Shift+Enter** を押してください。初回は実行環境のダウンロードに時間がかかります。
+以下のPyCafeアプリで実行結果を確認できます。コードを編集するには **Edit on PyCafe** を開いてください。初回は実行環境のダウンロードに時間がかかります。
 
-```{replite}
-:kernel: python
-:height: 450px
-:execute: False
+```{literalinclude} ../../../pycafe/numpy/app.py
+:language: python
+```
 
-import numpy as np
-a = np.array([1, 2, 3])
-b = np.array([4, 5, 6])
-print("a² =", a ** 2)
-print("内積 =", np.dot(a, b))
+```{pycafe}
+:source: numpy
+:height: 500px
+:title: NumPy配列の基本のPython実行例
 ```
 
 ## 試してみよう
 
-数値やパラメータを変更し、式が予測する結果と出力を比較してください。各実行セルはそれぞれのPythonカーネルで実行されます。
+数値やパラメータを変更し、式が予測する結果と出力を比較してください。各PyCafeアプリは独立した実行環境で動作します。

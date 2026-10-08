@@ -26,25 +26,37 @@ http://localhost:4321/ で確認できます。`dirhtml`によりHOMEは`/`、Wi
 
 記事の **Edit on GitHub** からMarkdownを編集・CommitするとActionsが検証して自動公開します。ブランチ保護がある場合はPRをマージします。PagesのSourceはGitHub Actionsに設定してください。
 
-## Python実行
+## Python実行：PyCafe
 
-[JupyterLite-Sphinx標準のreplite](https://jupyterlite-sphinx.readthedocs.io/en/latest/directives/replite.html)を使用します。
+[公式API](https://py.cafe/docs/api)と[公式プラグイン](https://github.com/py-cafe/mkdocs-pycafe/blob/main/src/mkdocs_pycafe/__init__.py)のSnippet埋め込み方式を使用します。Python環境はPyCafeが提供し、独自バックエンドは不要です。SphinxビルドはPyCafeへの接続を必要としません。
 
 ````markdown
-```{replite}
-:kernel: python
-:height: 450px
-:execute: False
-
-import numpy as np
-import matplotlib.pyplot as plt
-x = np.linspace(0, 10, 100)
-plt.plot(x, np.sin(x))
-plt.show()
+```{pycafe}
+:source: sine_wave
+:height: 500px
+:title: 正弦波を実行する
 ```
 ````
 
-セルをクリックしてコードを編集し、Shift+Enterで実行します。Pyodideはブラウザ内で動作し、Pythonサーバーは不要です。初回のカーネル・NumPy・Matplotlib取得にはインターネット接続が必要です。別の埋め込みセルは変数を共有しません。自動実行は無効です。
+`:source:` は `pycafe/<名前>/app.py` と `requirements.txt` を読み込み、JSON → gzip → base64でコードを含むURLを生成します。埋め込みURLは `https://py.cafe/embed?apptype=solara&theme=light&linkToApp=false#c=…`、編集URLは `https://py.cafe/snippet/solara/v1#c=…` です。架空の公開プロジェクトIDは使いません。記事をビルドすると最新のリポジトリ内コードが反映され、外部プロジェクトの同期作業は不要です。NumPy、Matplotlibを使用し、グラフは `solara.FigureMatplotlib(fig)` で表示します。
+
+埋め込み内のスライダーなどを操作できます。コードを編集する場合は **Edit on PyCafe** で新しいタブを開き、PyCafeのエディタで変更し、**Save all** で実行環境に反映してからプレビューの **refresh** で再実行します。エディタ付きiframeは採用していません。各アプリは独立しています。初回はパッケージ取得に時間がかかり、インターネット接続が必要です。外部サービスが利用できない場合も、常に表示される編集リンクと記事中のコードを利用できます。
+
+公開済みPyCafeプロジェクトを使用する場合は、`:source:` の代わりに次のように指定します。`USER/PROJECT` は説明用で、実際に公開したIDに置き換えてください。
+
+````markdown
+```{pycafe}
+:project: USER/PROJECT
+:height: 500px
+:title: Interactive Python Example
+```
+````
+
+この場合はPyCafe側でSolaraプロジェクトを作成し、対応する `app.py` と `requirements.txt` をアップロードしてください。Share → EmbedのURLが `https://py.cafe/embed/USER/PROJECT` に対応することと、ログアウト状態で表示されることを確認します。リポジトリ更新時にはPyCafeにもファイルを再アップロードし、表示を再確認します。GitHubとの自動同期は設定していません。公開プロジェクトを使用する方式への変更は任意で、現在のSnippet方式ではPyCafe側の登録・公開作業は不要です。
+
+高さは10〜9999px、幅は100%です。プロジェクトID、ソース名、高さを検証し、titleとURLのHTML属性をエスケープします。任意HTMLやJavaScript属性を指定する機能はありません。
+
+実際のサンプルURL、検証結果、未検証項目は [pycafe/README.md](pycafe/README.md) に記録しています。
 
 ## 検証・公開
 
@@ -52,6 +64,9 @@ plt.show()
 npm ci
 npm exec playwright install chromium
 npm test
+python3 -m unittest discover -s tests -p 'test_*.py'
+# PyCafeへの接続を含む任意の実行検証
+PYCAFE_LIVE=1 npm test -- tests/pycafe-live.spec.ts
 ```
 
 PRではビルド・内部リンク・ブラウザ検証を行い、mainへのpushでは同じ検証に成功した場合だけ公式GitHub Pages Actionsで公開します。
