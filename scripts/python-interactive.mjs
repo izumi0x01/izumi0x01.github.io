@@ -1,3 +1,4 @@
+import {renderHTML} from './python-html-output.mjs';
 import {EditorView, basicSetup} from 'codemirror';
 import {python} from '@codemirror/lang-python';
 let runtime;
@@ -29,24 +30,27 @@ for (const block of document.querySelectorAll('.python-interactive')) {
  const host = block.querySelector('.python-editor'); host.replaceChildren();
  const editor = new EditorView({doc: initial, extensions: [basicSetup, python(), EditorView.lineWrapping], parent: host});
  const output = block.querySelector('.python-output');
+ let cleanup = [];
+ const clearOutput = () => {cleanup.forEach(dispose => dispose()); cleanup = []; output.replaceChildren();};
  const run = block.querySelector('.python-run'), reset = block.querySelector('.python-reset');
  const status = block.querySelector('.python-status');
  const text = value => { const pre = document.createElement('pre'); pre.textContent = value; output.append(pre); };
  run.onclick = () => {
   run.disabled = reset.disabled = true; status.textContent = '実行待ち…';
   queue = queue.catch(() => {}).then(async () => {
-   output.replaceChildren(); status.textContent = 'Pythonを準備中…';
+   clearOutput(); status.textContent = 'Pythonを準備中…';
    try {
     const kernel = await getKernel(block.dataset.runtime); status.textContent = '実行中…';
     let clearPending = false;
     const future = kernel.requestExecute({code: editor.state.doc.toString(), stop_on_error: true});
     future.onIOPub = msg => {
      const type = msg.header.msg_type, c = msg.content;
-     if (type === 'clear_output') { if (c.wait) clearPending = true; else output.replaceChildren(); return; }
+     if (type === 'clear_output') { if (c.wait) clearPending = true; else clearOutput(); return; }
      if (!['stream','error','display_data','execute_result'].includes(type)) return;
-     if (clearPending) {output.replaceChildren(); clearPending = false;}
+     if (clearPending) {clearOutput(); clearPending = false;}
      if (type === 'stream') text(c.text);
      else if (type === 'error') text(c.traceback.join('\n').replace(/\x1b\[[0-9;]*m/g, ''));
+     else if (c.data['text/html']) cleanup.push(renderHTML(output, c.data['text/html']));
      else if (c.data['image/png']) { const img = document.createElement('img'); img.alt = 'Matplotlib Figure'; img.src = 'data:image/png;base64,' + c.data['image/png']; output.append(img); }
      else if (c.data['image/svg+xml']) {const img = document.createElement('img'); img.alt = 'Matplotlib Figure'; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(c.data['image/svg+xml']); output.append(img);}
      else if (c.data['text/plain']) text(c.data['text/plain']);
@@ -56,5 +60,5 @@ for (const block of document.querySelectorAll('.python-interactive')) {
    finally {run.disabled = reset.disabled = false;}
   });
  };
- reset.onclick = () => {editor.dispatch({changes: {from: 0, to: editor.state.doc.length, insert: initial}}); output.replaceChildren(); status.textContent = '';};
+ reset.onclick = () => {editor.dispatch({changes: {from: 0, to: editor.state.doc.length, insert: initial}}); clearOutput(); status.textContent = '';};
 }

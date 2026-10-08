@@ -9,3 +9,5 @@
 .python-output pre {white-space: pre-wrap; margin: 0; background: transparent; border: 0;}
 .python-output img {display: block; max-width: 100%; height: auto; margin: .5em 0;}
 .python-runtime {display: none;}
+
+.python-html-output {display:block; width:100%; height:1px; border:0;}

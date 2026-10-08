@@ -93,12 +93,12 @@ CodeMirror 6で編集し、Runで同一オリジンのJupyterLite 0.8.6の公開
 
 [公式Replite仕様](https://jupyterlite-sphinx.readthedocs.io/en/latest/directives/replite.html)を確認し、標準 `{replite}` と `:kernel: python` / `:execute: False` はインストールしたjupyterlite-sphinx 0.23.0が対応しています。ただし標準Repliteは固定高さのコンソールで、本文に合わせる自動リサイズを提供しません。今回のUIには `{python-interactive}` を使用してください。標準の `/lite/` とインライン実行用 `/wiki/lite/` の静的配布物をビルド時に生成します。
 
-初回実行には外部CDNからPyodideとパッケージを取得するためインターネット接続が必要です。HTMLなど任意のリッチ出力、対話ウィジェット、実行の中断は未対応です。PNG/SVG、print、例外、text/plain（NumPy結果を含む）、複数Figure、clear_outputに対応します。
+初回実行には外部CDNからPyodideとパッケージを取得するためインターネット接続が必要です。`text/html` は記事とカーネルにアクセスできないsandbox（allow-scriptsのみ）で表示します。親は送信元・opaque origin・ランダムなトークンを検証して高さ通知を受け取ります。対話ウィジェット、実行の中断は未対応です。PNG/SVG、print、例外、text/plain（NumPy結果を含む）、複数Figure、clear_outputに対応します。
 
 エディタソースを変更した場合は以下で配布用JSを再生成します。
 
 ```sh
-node_modules/.bin/esbuild scripts/python-interactive.mjs --bundle --format=esm --outfile=docs/_static/python-interactive.js
+node_modules/.bin/esbuild scripts/python-interactive.mjs --bundle --format=esm --minify --outfile=docs/_static/python-interactive.js
 npm test -- tests/interactive.spec.ts
 # 外部CDNを使う実行検証（通常CIからは分離）
 JUPYTERLITE_LIVE=1 npm test -- tests/interactive.spec.ts
@@ -107,3 +107,15 @@ JUPYTERLITE_LIVE=1 npm test -- tests/interactive.spec.ts
 実行検証では通常・大きな・複数グラフ、再実行、Reset、例外、print、NumPy、モバイルを確認し、出力とエディタのscrollHeight/clientHeightを比較します。スクリーンショットは `test-results/inline-*.png` に保存します。
 
 2026-10-09の検証結果：Sphinx警告をエラー扱いにしたビルド、別出力先への再ビルド、内部リンク検査、Pythonテスト2件が成功。ChromiumでJupyterLite実行テストを有効にした全体検証は5件成功、既存PyCafeの外部実行テスト1件は未実行です。通常・大きな・複数Figure、再実行、Reset、例外、print、NumPy、初回遅延読み込み、モバイル、縦スクロール不要の検査に成功しました。デスクトップ／モバイルのスクリーンショットも取得し、モバイルで2枚の図が縦に全体表示されることを目視確認しました。GitHub Pagesへの公開操作は行っていません。
+
+## 追加のインライン実行記事とFuncAnimation
+
+- `/wiki/python/numpy-interactive/`: 配列・内積・連立方程式。
+- `/wiki/python/matplotlib-interactive/`: 波形の重ね描き・複数Axes。
+- `/wiki/python/animation/`: `matplotlib.animation.FuncAnimation` の24フレームの正弦波。
+
+アニメーションは `display(HTML(ani.to_jshtml(default_mode="loop")))` で出力します。`plt.show()` の静止画とは異なり、標準Matplotlibプレイヤーで再生・停止・フレーム選択ができます。フレーム生成はPythonのワーカーで行い、生成後の再生はブラウザ側で行います。FFmpegは不要です。フレーム数が多いと初期生成とメモリ使用量が増えます。
+
+HTML出力は独立したsandboxでJavaScriptを実行します。CSPで外部スクリプトや通信を禁止し、Font Awesomeのスタイルとフォントだけを許可します。ResizeObserverが実際の内容の高さを測り、microtaskで通知をまとめ、画面外iframeの描画待ちで高さ更新が止まることを防ぎます。再実行・Reset時には古いプレイヤーとイベントリスナーを破棄します。HTML出力から記事・カーネルのDOMへはアクセスできません。
+
+`JUPYTERLITE_LIVE=1 npm test -- tests/animation.spec.ts` は、実際のPythonで各記事を実行し、アニメーションの先頭と末尾の画像の違い、再生中のフレーム番号の変化、Pause後の停止、モバイルの高さ、再実行、Resetを検証します。スクリーンショットは `test-results/animation-*.png` に保存します。
