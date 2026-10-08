@@ -7,7 +7,7 @@
     "dev": "python3 scripts/build.py && python3 scripts/preview.py",
     "build": "python3 scripts/build.py",
     "preview": "python3 scripts/preview.py",
-    "check": "python3 -m compileall -q scripts wiki",
+    "check": "python3 -m compileall -q scripts docs",
     "test": "playwright test",
     "inspect": "node scripts/inspect.mjs"
   },
