@@ -53,7 +53,9 @@ Actionsから`build.py`が`build_examples.py`を呼び、AggとPillowWriterでGI
 
 PRは公開せず、同一リポジトリのPRで実行・GIF・同期更新・Sphinx・リンク・通常ブラウザテストを行います。外部forkのPRの実行ジョブはスキップします。レビュー後に信頼済みブランチへ取り込んで検証する運用です。ビルドジョブはcontents:readで、Secretsを渡しません。mainの成功ビルドのみ公開可能です。
 
-GitHubへのCommit・Pushは今回行っていないため、変更後のGitHub ActionsとPagesデプロイの実行結果は未確認です。mainへのレビュー必須などのブランチ保護はリポジトリ設定が必要です。
+実装コミット`5dacc98`をmainへPushし、[GitHub ActionsのビルドとPagesデプロイ](https://github.com/izumi0x01/izumi0x01.github.io/actions/runs/37892038958)の成功を確認しました。[公開ページ](https://izumi0x01.github.io/wiki/python/matplotlib/)でブラウザ検証7件すべてが成功しました。公開環境でも3例のFuncAnimation実行・再生、コード編集、標準出力、例外表示、静的GIFの先行表示、HOME、検索を確認しています。
+
+PagesのSourceは、ユーザーによりGitHub Actionsへ切り替え済みです。切り替え後も公開ページのGIF参照とReplite設定が維持されていることを確認しました。mainへのレビュー必須などのブランチ保護はリポジトリ設定が必要です。
 
 Repliteは高さ720px固定で、長い出力は内部スクロールします。初回のPython起動はPyodideとライブラリの外部取得を伴います。CIの通常テストは外部CDN依存の実行を省き、実行検証は`JUPYTERLITE_LIVE=1`で別途実施します。
 
