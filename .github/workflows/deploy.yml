@@ -11,6 +11,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   build:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    timeout-minutes: 20
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,9 +25,11 @@ jobs:
           node-version: "22"
           cache: npm
       - run: pip install -r requirements.txt
-      - run: python -m compileall -q scripts docs
+      - run: python -m compileall -q scripts docs examples
       - run: python -m unittest discover -s tests -p 'test_*.py'
       - run: python scripts/build.py
+      - run: python scripts/verify_outputs.py
+      - run: python scripts/verify_example_sync.py
       - run: python scripts/check_links.py
       - run: npm ci
       - run: npx playwright install --with-deps chromium
@@ -36,11 +40,11 @@ jobs:
           name: browser-results
           path: test-results
       - uses: actions/upload-pages-artifact@v3
-        if: github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
         with:
           path: dist
   deploy:
-    if: github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     permissions:
       pages: write
       id-token: write

@@ -9,4 +9,7 @@ interactive
 numpy-interactive
 matplotlib-interactive
 animation
+matplotlib
+multiple-plots
+scatter-plot
 ```

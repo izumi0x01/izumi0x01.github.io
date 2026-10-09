@@ -9,7 +9,9 @@ class WikiTests(unittest.TestCase):
                     for p in (ROOT / 'docs/wiki').rglob('*.md')}
         expected = {'index.md', 'python/index.md', 'python/interactive.md',
                     'python/numpy-interactive.md', 'python/matplotlib-interactive.md',
-                    'python/animation.md'}
+                    'python/animation.md', 'python/matplotlib.md',
+                    'python/multiple-plots.md', 'python/scatter-plot.md'}
         self.assertEqual(articles, expected)
         for name in expected - {'index.md', 'python/index.md'}:
-            self.assertIn('```{python-interactive}', (ROOT / 'docs/wiki' / name).read_text())
+            text = (ROOT / 'docs/wiki' / name).read_text()
+            self.assertTrue('```{python-interactive}' in text or '```{python-example}' in text)

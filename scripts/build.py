@@ -6,6 +6,7 @@ import shutil
 import subprocess
 import sys
 ROOT = Path(__file__).resolve().parents[1]
+subprocess.run([sys.executable, str(ROOT / 'scripts/build_examples.py')], check=True)
 OUT = (ROOT / os.environ.get('BUILD_DIR', 'dist')).resolve()
 if OUT != ROOT / 'dist' and Path('/tmp') not in OUT.parents:
     raise ValueError('BUILD_DIR must be dist/ or a directory under /tmp/')

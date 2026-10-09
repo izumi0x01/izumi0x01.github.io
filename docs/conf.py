@@ -5,7 +5,7 @@ sys.path.insert(0, str(Path(__file__).parent / '_ext'))
 project = 'Izumi | Research & Wiki'
 author = 'Izumi'
 language = 'ja'
-extensions = ['myst_parser', 'sphinx.ext.mathjax', 'jupyterlite_sphinx', 'python_interactive']
+extensions = ['myst_parser', 'sphinx.ext.mathjax', 'jupyterlite_sphinx', 'python_interactive', 'python_example', 'sphinx_copybutton']
 myst_enable_extensions = ['dollarmath', 'amsmath', 'colon_fence']
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']

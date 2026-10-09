@@ -1,6 +1,30 @@
 # Research HOME & Interactive Python Wiki
 
-HOMEとWikiを単一のSphinxプロジェクト（`docs/`）から生成します。Wikiの記事は `python-interactive` を使う4ページに統一しています。
+HOMEとWikiを単一のSphinxプロジェクト（`docs/`）から生成します。プロフィールと共通デザインは維持しています。
+
+## 自動生成するPythonサンプル
+
+`/wiki/python/matplotlib/` は Sample Code → Output → Interactive Python の3段構成です。
+`examples/matplotlib/sine_animation.py` をGitHubで編集してmainにCommitするだけで、コード表示・GIF・Replite初期コードが同時に更新されます。
+元ファイルに計算式、Figure、`update`、`FuncAnimation`を置きます。保存パスとバックエンド設定はビルド側で扱います。
+
+同じ仕組みを `multiple_plots.py`（`/wiki/python/multiple-plots/`）と `scatter_plot.py`（`/wiki/python/scatter-plot/`）にも適用しています。
+
+`scripts/build.py` は最初に `scripts/build_examples.py` を実行します。各サンプルを別プロセスで実行し、AggとPillowWriterで `build/generated/` にGIFを保存します。GIFのfpsはFuncAnimationのintervalから算出します。CPUは60秒、アドレス空間は2GiB、壁時計時間は90秒までです。例外・空ファイル・単一フレーム・破損GIFで失敗し、公開を止めます。生成物はGit管理せず、Sphinxが `_images/` にコピーします。
+
+記事では `{python-example}` に `:source: matplotlib/sine_animation.py` と `:mode: code` / `output` / `interactive` を指定します。codeはハイライト・コピー・GitHub編集リンク、outputは標準Sphinx画像ノード、interactiveはjupyterlite-sphinxのRepliteを生成します。ブラウザ用コードは元ファイルへ `ani.to_jshtml()` の表示処理を付加するだけで、計算式を複製しません。元ファイルは`ani`と`fig`を定義するアニメーションサンプルを想定しています。
+
+Repliteは公式のprompt機能で操作時に読み込み、RunまたはShift+Enterで実行します。コードを上、出力を下に配置します。iframeは高さ720px固定で、自動高さ調整は未実装です。既存の4記事は従来のインラインエディタを維持しています。
+
+CIは同一リポジトリのPRでビルド・GIF・リンク・ブラウザ検証を行い、公開しません。外部forkのPRはPython実行ジョブをスキップします。レビュー後に管理者が信頼済みのリポジトリ内ブランチへ取り込んで検証してください。mainの成功したビルドのみPagesへ公開します。ビルドジョブはcontents:readで、Secretsを渡しません。リポジトリ設定でmainへのレビュー必須のブランチ保護を設定してください。
+
+```sh
+python3 scripts/verify_outputs.py
+python3 scripts/verify_example_sync.py
+JUPYTERLITE_LIVE=1 npm test -- tests/examples.spec.ts
+```
+
+同期検証は一時コピーでsinをcosへ変更して再ビルドし、表示コード・GIFのハッシュ・Replite初期コードの変更を確認します。作業中の元ファイルは変更しません。
 
 - `/wiki/python/interactive/`: 通常・大きな・複数のMatplotlib Figure
 - `/wiki/python/numpy-interactive/`: 配列・内積・連立方程式
