@@ -20,6 +20,14 @@ test('NumPy and Matplotlib examples execute on the additional pages', async ({pa
  await expect(numpy.nth(0).locator('.python-output')).toContainText('a · b = 32',{timeout:180000});
  await numpy.nth(1).locator('.python-run').click();
  await expect(numpy.nth(1).locator('.python-output')).toContainText('verified = True',{timeout:60000});
+ await expect(numpy.nth(0).locator('.python-timing')).toContainText(/準備 [0-9.]+ 秒 \/ 実行 [0-9.]+ 秒/);
+ const editor = numpy.nth(0).locator('.cm-content');
+ await editor.fill('import numpy as np\nimport sys\nprint("value =", np.sum(np.arange(5)))\nprint("plot_loaded =", ("mat" + "plotlib") in sys.modules)');
+ await numpy.nth(0).locator('.python-run').click();
+ await expect(numpy.nth(0).locator('.python-output')).toContainText('value = 10',{timeout:60000});
+ await expect(numpy.nth(0).locator('.python-output')).toContainText('plot_loaded = False');
+ console.log('NumPy repeated run:', await numpy.nth(0).locator('.python-timing').textContent());
+
  await page.goto('/wiki/python/matplotlib-interactive/');
  for (const block of await page.locator('.python-interactive').all()) {
   await block.locator('.python-run').click();

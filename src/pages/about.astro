@@ -1,5 +1,0 @@
----
-import Layout from '../layouts/Layout.astro';
-import {profile} from '../data/site';
----
-<Layout title="About / CV"><div class="page-intro"><span class="eyebrow">01 / Profile</span><h1>About / CV</h1><p>{profile.intro}</p></div><div class="grid"><section class="card"><h2>{profile.name}</h2><p>{profile.affiliation}</p><h3>専門分野・スキル</h3><div class="tags">{[...profile.fields,'Python','TypeScript'].map(s => <span class="tag">{s}</span>)}</div><h3>連絡先</h3>{profile.contact ? <a href={`mailto:${profile.contact}`}>{profile.contact}</a> : <p>連絡先は未設定です。</p>}<a href={profile.github}>GitHub ↗</a></section><section class="card"><h2>学歴・経歴</h2>{profile.education.map(e => <p>{e}</p>)}<h3>受賞歴</h3>{profile.awards.map(a => <p>{a}</p>)}{profile.cv ? <a class="button" href={profile.cv}>CVをダウンロード</a> : <p>CVは未登録です。</p>}</section></div><p class="note">編集用サンプル。本人の経歴や所属を示すものではありません。</p></Layout>

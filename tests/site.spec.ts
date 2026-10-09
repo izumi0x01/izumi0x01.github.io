@@ -1,49 +1,41 @@
 import {test, expect} from '@playwright/test';
-test('single Sphinx HOME, navigation, mobile and edit links', async ({page}) => {
- await page.route('https://py.cafe/**', route=>route.abort());
+test('HOME, navigation, mobile and edit links', async ({page}) => {
  await page.goto('/');
  await expect(page.locator('h1')).toContainText('Izumi');
- await expect(page.locator('.global-menu a')).toHaveText(['HOME', 'Wiki']);
+ await expect(page.locator('.global-menu a')).toHaveText(['HOME','Wiki']);
  await expect(page.locator('.profile-photo')).toBeVisible();
+ await expect(page.locator('script[src*="python-interactive.js"]')).toHaveCount(0);
  for (const title of ['Profile','Research Interests','Research Projects','Publications','Education','Experience','Awards','Contact'])
-  await expect(page.getByRole('heading', {name:new RegExp(`^${title}`)})).toBeVisible();
- await page.goto('/wiki/python/matplotlib/');
+  await expect(page.getByRole('heading',{name:new RegExp(`^${title}`)})).toBeVisible();
+ await page.goto('/wiki/python/matplotlib-interactive/');
  await expect(page.locator('.wy-nav-side')).toBeVisible();
- await expect(page.getByRole('link',{name:/Edit on GitHub/})).toHaveAttribute('href', /docs\/wiki\/python\/matplotlib.md$/);
- await expect(page.locator('iframe')).toHaveCount(3);
+ await expect(page.getByRole('link',{name:/Edit on GitHub/})).toHaveAttribute('href',/docs\/wiki\/python\/matplotlib-interactive.md$/);
+ await expect(page.locator('.cm-editor')).toHaveCount(2);
  await page.setViewportSize({width:390,height:844});
- for(const route of ['/','/wiki/python/matplotlib/']) {
+ for(const route of ['/','/wiki/python/matplotlib-interactive/']) {
   await page.goto(route);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
  }
 });
-test('Sphinx search and mathematics',async({page})=>{
- await page.goto('/wiki/robotics/kinematics/');
+test('Sphinx search and mathematical article',async({page})=>{
+ await page.goto('/wiki/python/animation/');
  await expect(page.locator('mjx-container').first()).toBeVisible({timeout:60000});
- await page.locator('input[name="q"]').fill('運動学');
+ await page.locator('input[name="q"]').fill('FuncAnimation');
  await page.locator('input[name="q"]').press('Enter');
  await expect(page.locator('#search-results a').first()).toBeVisible();
 });
-test('PyCafe embeds have responsive dimensions and fallback editor links',async({page})=>{
- // CI must succeed independently of external service availability.
- await page.route('https://py.cafe/**', route=>route.abort());
- await page.goto('/wiki/python/matplotlib/');
- const frames = page.locator('.pycafe-example iframe');
- await expect(frames).toHaveCount(3);
- for (let i = 0; i < 3; i++) {
-  await expect(frames.nth(i)).toHaveAttribute('src', /^https:\/\/py\.cafe\/embed\?apptype=solara.*#c=/);
-  await expect(frames.nth(i)).toHaveAttribute('width', '100%');
-  await expect(frames.nth(i)).toHaveAttribute('height', '500');
-  await expect(frames.nth(i)).toHaveAttribute('title', /NumPyとMatplotlib/);
-  await expect(frames.nth(i)).toHaveAttribute('loading', 'lazy');
- }
- await expect(page.getByRole('link', {name:/Edit on PyCafe/})).toHaveCount(3);
- await page.setViewportSize({width:390,height:844});
- const bounds = await frames.first().boundingBox();
- expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(390);
- for (const route of ['/wiki/python/basics/','/wiki/robotics/rrt/','/wiki/mathematics/linear_algebra/']) {
-  await page.goto(route);
-  await expect(page.locator('.pycafe-example iframe')).toHaveCount(1);
-  await expect(page.getByRole('link',{name:/Edit on PyCafe/})).toBeVisible();
- }
+test('loading progress shows real elapsed time before the kernel is ready',async({page})=>{
+ await page.route('**/wiki/lite/tree/index.html',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><title>Pending initialization</title>'}));
+ await page.goto('/wiki/python/numpy-interactive/');
+ const block=page.locator('.python-interactive').first();
+ await expect(block.locator('.python-loading')).toBeHidden();
+ await block.locator('.python-run').click();
+ await expect(block.locator('.python-loading')).toBeVisible();
+ await expect(block.locator('progress')).toHaveAttribute('max','3');
+ await expect(block.locator('progress')).toHaveAttribute('value','0');
+ await expect(block.locator('.python-status')).toContainText('JupyterLite');
+ const before=await block.locator('.python-timing').textContent();
+ await expect.poll(()=>block.locator('.python-timing').textContent()).not.toBe(before);
+ await expect(block.locator('.python-run')).toBeDisabled();
+ await page.screenshot({path:'test-results/python-loading-progress.png',fullPage:true});
 });

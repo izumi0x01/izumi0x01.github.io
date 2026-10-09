@@ -1,7 +1,0 @@
----
-import Nav from '../components/Nav.astro';
-import { profile, href } from '../data/site';
-import '../styles/global.css';
-const { title = 'Research Notes', description = profile.intro } = Astro.props;
----
-<!doctype html><html lang="ja"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width"/><meta name="description" content={description}/><title>{title} — {profile.name}</title><link rel="icon" href={href('favicon.svg')}/><script is:inline>try { document.documentElement.dataset.theme = localStorage.getItem('starlight-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch {}</script></head><body><header><Nav/></header><main class="portfolio"><slot/></main><footer><span>© {new Date().getFullYear()} {profile.name} · Research Notes</span><a href={profile.github}>GitHub ↗</a><span>Built with curiosity.</span></footer></body></html>

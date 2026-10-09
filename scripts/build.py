@@ -32,7 +32,7 @@ if not any(ext.get('name') == '@jupyterlite/pyodide-kernel-extension'
            for ext in runtime_config.get('federated_extensions', [])):
     print('::error::JupyterLite Pyodide kernel extension was not included; check the Python environment')
     raise RuntimeError('JupyterLite Pyodide kernel extension was not included; check the Python environment')
-# Keep standard replite URLs and provide the inline runtime below /wiki/.
-shutil.copytree(OUT / 'lite', OUT / 'wiki' / 'lite')
+# Publish a single runtime used by the inline component.
+shutil.move(str(OUT / 'lite'), str(OUT / 'wiki' / 'lite'))
 (OUT / '.nojekyll').touch()
 print(f'Built single Sphinx HOME + Wiki: {OUT}')

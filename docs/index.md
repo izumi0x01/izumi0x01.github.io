@@ -24,8 +24,8 @@
 
 本人の研究プロジェクトは未登録です。既存のサンプル教材を以下に保存しています。
 
-- [Motion Planning / RRT](wiki/robotics/rrt.md)
-- [Robot Kinematics](wiki/robotics/kinematics.md)
+- [NumPyによる数値計算](wiki/python/numpy-interactive.md)
+- [Matplotlibによる可視化](wiki/python/matplotlib-interactive.md)
 
 ## Publications
 

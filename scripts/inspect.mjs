@@ -1,15 +1,15 @@
 import { chromium } from '@playwright/test';
 const browser=await chromium.launch();const page=await browser.newPage();
 page.on('pageerror',e=>console.log('PAGE ERROR',e.message));
-await page.goto('http://localhost:4321/wiki/python/numpy.html');
+await page.goto('http://localhost:4321/wiki/python/numpy-interactive/');
 console.log('sidebar',await page.locator('.wy-nav-side').isVisible());
 await page.screenshot({path:'/tmp/wiki-desktop.png'});
-await page.locator('input[name="q"]').fill('運動学');
+await page.locator('input[name="q"]').fill('NumPy');
 await page.locator('input[name="q"]').press('Enter');
 await page.waitForTimeout(1000);
 console.log('inputs',await page.locator('input').evaluateAll(inputs=>inputs.map(i=>[i.type,i.outerHTML])));
 await page.screenshot({path:'/tmp/wiki-search.png'});
-await page.setViewportSize({width:390,height:844});await page.goto('http://localhost:4321/wiki/python/matplotlib.html');await page.screenshot({path:'/tmp/wiki-mobile.png'});
+await page.setViewportSize({width:390,height:844});await page.goto('http://localhost:4321/wiki/python/matplotlib-interactive/');await page.screenshot({path:'/tmp/wiki-mobile.png'});
 console.log('mobile overflow',await page.evaluate(()=>document.documentElement.scrollWidth-innerWidth));
 await page.goto('http://localhost:4321/');await page.screenshot({path:'/tmp/home-mobile.png'});
 await browser.close();

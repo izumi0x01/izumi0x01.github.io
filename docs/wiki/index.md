@@ -1,13 +1,10 @@
-# Technical Wiki
+# Interactive Python Wiki
 
-日本語で学ぶ技術ノート / Interactive technical notes in Japanese.
+コードを編集してRunを押すと、本文内でPythonの計算・グラフ・アニメーションを確認できます。初回の準備段階と経過時間は、各コードブロックのプログレスバーに表示します。
 
 ```{toctree}
 :maxdepth: 2
 :caption: Contents
 
-introduction
 python/index
-robotics/index
-mathematics/index
 ```

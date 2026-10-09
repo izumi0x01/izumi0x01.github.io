@@ -1,5 +1,0 @@
----
-import Layout from '../layouts/Layout.astro';
-import {research,publications,href} from '../data/site';
----
-<Layout title="Research"><div class="page-intro"><span class="eyebrow">02 / Research</span><h1>理論から、実装へ。</h1><p>研究テーマの紹介形式を示すサンプルです。実際の研究情報はデータファイルから追加できます。</p></div><div class="grid">{research.map(r => <article class="card"><img src={href(r.image)} alt={r.subtitle}/><h2>{r.title}</h2><p>{r.subtitle}</p><p>{r.description}</p><div class="tags">{r.tags.map(t => <span class="tag">{t}</span>)}</div>{r.video && <video controls src={r.video}/>}<div class="actions"><a href={href(r.wiki)}>関連Wiki →</a><a href={r.github}>GitHub ↗</a></div>{publications.filter(p => r.publicationIds.includes(p.id)).map(p => <p><a href={href('publications/#'+p.id)}>関連論文（架空サンプル）: {p.title}</a></p>)}</article>)}</div></Layout>
