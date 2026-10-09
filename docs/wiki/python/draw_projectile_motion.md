@@ -23,7 +23,7 @@ $$
 
 で表される。
 
-### 飛距離と最高到達点
+## 飛距離と最高到達点
 
 物体が投射位置と同じ高さに戻るまでの時間 $T$ は、
 
@@ -47,7 +47,7 @@ $$
 となる。
 
 
-```{python_inline}
+```{python-interactive}
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy as np
