@@ -1,4 +1,4 @@
-"""Build HOME and Wiki as one Sphinx dirhtml project."""
+"""Build the single Matplotlib page and its browser Python runtime."""
 from pathlib import Path
 import os
 import json
@@ -6,7 +6,6 @@ import shutil
 import subprocess
 import sys
 ROOT = Path(__file__).resolve().parents[1]
-subprocess.run([sys.executable, str(ROOT / 'scripts/build_examples.py')], check=True)
 OUT = (ROOT / os.environ.get('BUILD_DIR', 'dist')).resolve()
 if OUT != ROOT / 'dist' and Path('/tmp') not in OUT.parents:
     raise ValueError('BUILD_DIR must be dist/ or a directory under /tmp/')
@@ -34,6 +33,7 @@ if not any(ext.get('name') == '@jupyterlite/pyodide-kernel-extension'
     print('::error::JupyterLite Pyodide kernel extension was not included; check the Python environment')
     raise RuntimeError('JupyterLite Pyodide kernel extension was not included; check the Python environment')
 # Publish a single runtime used by the inline component.
+(OUT / 'wiki').mkdir(exist_ok=True)
 shutil.move(str(OUT / 'lite'), str(OUT / 'wiki' / 'lite'))
 (OUT / '.nojekyll').touch()
-print(f'Built single Sphinx HOME + Wiki: {OUT}')
+print(f'Built Matplotlib page: {OUT}')

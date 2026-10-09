@@ -1,91 +1,34 @@
-# Research HOME & Interactive Python Wiki
+# Matplotlibを編集して実行する
 
-HOMEとWikiを単一のSphinxプロジェクト（`docs/`）から生成します。プロフィールと共通デザインは維持しています。
+https://izumi0x01.github.io/ に、ブラウザでコードを編集・実行できる1ページを公開します。
 
-## 自動生成するPythonサンプル
+## 記事の編集
 
-`/wiki/python/matplotlib/` は Sample Code → Output → Interactive Python の3段構成です。
-`examples/matplotlib/sine_animation.py` をGitHubで編集してmainにCommitするだけで、コード表示・GIF・Replite初期コードが同時に更新されます。
-元ファイルに計算式、Figure、`update`、`FuncAnimation`を置きます。保存パスとバックエンド設定はビルド側で扱います。
+`docs/index.md` をGitHubで編集してmainにコミットしてください。
+`{python-interactive}` ブロック内のPythonコードが、ページ上の編集・実行欄になります。
+ブラウザ上の編集は記事には保存されません。
 
-同じ仕組みを `multiple_plots.py`（`/wiki/python/multiple-plots/`）と `scatter_plot.py`（`/wiki/python/scatter-plot/`）にも適用しています。
+## 公開
 
-`scripts/build.py` は最初に `scripts/build_examples.py` を実行します。各サンプルを別プロセスで実行し、AggとPillowWriterで `build/generated/` にGIFを保存します。GIFのfpsはFuncAnimationのintervalから算出します。CPUは60秒、アドレス空間は2GiB、壁時計時間は90秒までです。例外・空ファイル・単一フレーム・破損GIFで失敗し、公開を止めます。生成物はGit管理せず、Sphinxが `_images/` にコピーします。
+mainへのpushでGitHub ActionsがSphinxのHTMLとJupyterLiteの実行環境を生成し、GitHub Pagesへ公開します。テストは実行しません。
 
-記事では `{python-example}` に `:source: matplotlib/sine_animation.py` と `:mode: code` / `output` / `interactive` を指定します。codeはハイライト・コピー・GitHub編集リンク、outputは標準Sphinx画像ノード、interactiveはjupyterlite-sphinxのRepliteを生成します。ブラウザ用コードは元ファイルへ `ani.to_jshtml()` の表示処理を付加するだけで、計算式を複製しません。元ファイルは`ani`と`fig`を定義するアニメーションサンプルを想定しています。
-
-Repliteは公式のprompt機能で操作時に読み込み、RunまたはShift+Enterで実行します。コードを上、出力を下に配置します。iframeは高さ720px固定で、自動高さ調整は未実装です。既存の4記事は従来のインラインエディタを維持しています。
-
-CIは同一リポジトリのPRでビルド・GIF・リンク・ブラウザ検証を行い、公開しません。外部forkのPRはPython実行ジョブをスキップします。レビュー後に管理者が信頼済みのリポジトリ内ブランチへ取り込んで検証してください。mainの成功したビルドのみPagesへ公開します。ビルドジョブはcontents:readで、Secretsを渡しません。リポジトリ設定でmainへのレビュー必須のブランチ保護を設定してください。
-
-```sh
-python3 scripts/verify_outputs.py
-python3 scripts/verify_example_sync.py
-JUPYTERLITE_LIVE=1 npm test -- tests/examples.spec.ts
-```
-
-同期検証は一時コピーでsinをcosへ変更して再ビルドし、表示コード・GIFのハッシュ・Replite初期コードの変更を確認します。作業中の元ファイルは変更しません。
-
-- `/wiki/python/interactive/`: 通常・大きな・複数のMatplotlib Figure
-- `/wiki/python/numpy-interactive/`: 配列・内積・連立方程式
-- `/wiki/python/matplotlib-interactive/`: 波形の重ね描き・複数Axes
-- `/wiki/python/animation/`: FuncAnimationの生成・再生・停止
-
-## ビルドと公開
+ローカルでプレビューする場合：
 
 ```sh
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
 python3 scripts/build.py
-python3 scripts/check_links.py
 python3 scripts/preview.py
 ```
 
-http://localhost:4321/ でプレビューできます。mainへのpushでGitHub Actionsが検証し、GitHub Pagesへ公開します。公開ページは `/wiki/` 以下です。バックエンドサーバーは不要です。
+http://localhost:4321/ で閲覧できます。
 
-HOMEは `docs/index.md`、Wikiは `docs/wiki/`、共通設定は `docs/conf.py` で管理します。各記事のEdit on GitHubから編集できます。
-
-## 記事への埋め込み
-
-````markdown
-```{python-interactive}
-import numpy as np
-import matplotlib.pyplot as plt
-x = np.linspace(0, 10, 100)
-plt.plot(x, np.sin(x))
-plt.show()
-```
-````
-
-CodeMirrorで直接編集し、Runで実行します。JupyterLiteの公式 `serviceManager.kernels.startNew` / `requestExecute` APIとPyodideカーネルを使用します。実行エンジンの配布ファイルは変更しません。同一ページのセルは1個のカーネルを共有し、実行は直列化します。ページ移動で環境は新しくなります。Resetはそのセルのコード・出力・進捗表示だけを戻します。
-
-## 読み込み時間と高速化
-
-コードブロックにHTMLのprogress要素を組み込み、Runから完了までの経過秒数を表示します。準備は「JupyterLite読み込み」「Python環境の起動」「実行の準備」の3段階です。バーは完了した段階数を表示し、実行中は所要時間が不明なためindeterminate表示に切り替わります。ダウンロードのバイト数や架空のパーセントは表示しません。終了後は準備時間と実行時間を分けて表示します。待機中・エラー時にも経過時間が分かります。
-
-Python環境はRunまで遅延読み込みします。NumPyだけのセルではMatplotlibを初期化しません。Matplotlibのimport、plt、FuncAnimationを使うセルでのみ `%matplotlib inline` を準備し、同一カーネルでは1回だけ行います。動的にライブラリ名を組み立ててimportする特殊なコードでは、必要に応じて `%matplotlib inline` をコードに明記してください。ページ内の再実行では準備済み環境を再利用します。エディタJSは圧縮して配布し、HOMEや目次では読み込みません。実行環境の配布物も `/wiki/lite/` の1か所に統一しています。
-
-初回にはインターネット接続とPyodide・必要パッケージの取得が必要です。通信速度や端末性能によって時間は変わり、ページ間でPythonカーネルは共有しません。
-
-## 出力とアニメーション
-
-テキスト・例外・NumPy結果・PNG/SVG・複数Figureを本文のDOMに表示します。画像は最大幅100%で縦横比を保ち、出力に固定高さや独立した縦スクロールは設定しません。
-
-FuncAnimationは `display(HTML(ani.to_jshtml(default_mode="loop")))` でブラウザのプレイヤーを出力します。Runでフレームを生成し、Playで再生します。Pause・フレーム選択・速度変更が使えます。FFmpegは不要です。フレーム数を増やすと生成時間とメモリ使用量が増えます。
-
-HTML出力はallow-scriptsのみを許可したsandboxに隔離します。CSPで外部スクリプトや通信を禁止し、プレイヤー用のFont Awesomeのスタイル・フォントのみ許可します。出力から記事やカーネルのDOMへアクセスできません。ResizeObserverとmicrotaskで内容の高さを通知し、親は送信元、opaque origin、ランダムトークンを検証します。再実行・Reset時に古いプレイヤーとイベントリスナーを破棄します。実行の中断とJupyterの対話ウィジェットは未対応です。
-
-## 検証とエディタの更新
+## エディタの更新
 
 ```sh
 npm ci
 npm run build:editor
-npm exec playwright install chromium
-npm test
-python3 -m unittest discover -s tests -p 'test_*.py'
-# 実際のPython・Matplotlib・アニメーションを含む検証
-JUPYTERLITE_LIVE=1 npm test
 ```
 
-通常CIは外部CDNに依存する実行検証を分離し、初期表示・進捗表示・HOME・検索・目次を検証します。実行検証では各ページのPython、Matplotlibの遅延読み込み、再実行、エラー、出力の伸縮、FuncAnimationのフレーム変化・再生・停止・モバイル表示を確認します。スクリーンショットは `test-results/` に保存します。
+生成された `docs/_static/python-interactive.js` もコミットしてください。記事だけの編集では不要です。

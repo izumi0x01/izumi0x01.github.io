@@ -2,10 +2,10 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent / '_ext'))
-project = 'Izumi | Research & Wiki'
+project = 'Matplotlibを編集して実行する'
 author = 'Izumi'
 language = 'ja'
-extensions = ['myst_parser', 'sphinx.ext.mathjax', 'jupyterlite_sphinx', 'python_interactive', 'python_example', 'sphinx_copybutton']
+extensions = ['myst_parser', 'sphinx.ext.mathjax', 'jupyterlite_sphinx', 'python_interactive', 'sphinx_copybutton']
 myst_enable_extensions = ['dollarmath', 'amsmath', 'colon_fence']
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
