@@ -6,6 +6,7 @@ Pythonのコードを編集して実行できる研究ノートです。
 :maxdepth: 1
 :caption: Python
 
-python/matplotlib-interactive
-python/draw_circle
+Matplotlibの基本 <python/matplotlib-interactive>
+円運動の描画 <python/draw_circle>
+斜方投射の運動 <python/draw_projecttile_motion>
 ```
