@@ -42,5 +42,7 @@ axes[1].set_title("cos(x)")
 plt.show()
 ```
 
+## うんちいいいいいいいいいいいいいいいいい
+
 図を時間とともに変える方法は [FuncAnimation](animation.md) で試せます。
 [通常・大きな・複数Figureの検証例](interactive.md) も利用できます。
