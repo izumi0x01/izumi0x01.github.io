@@ -1,10 +1,11 @@
-# Matplotlibを編集して実行する
+# Research HOME & Python Wiki
 
-https://izumi0x01.github.io/ に、ブラウザでコードを編集・実行できる1ページを公開します。
+HOME（https://izumi0x01.github.io/）からWikiへ移動できます。
+Matplotlibの記事は `/wiki/python/matplotlib-interactive/` に公開します。
 
 ## 記事の編集
 
-`docs/index.md` をGitHubで編集してmainにコミットしてください。
+HOMEは `docs/index.md`、Wikiの目次は `docs/wiki/index.md`、Pythonの記事は `docs/wiki/python/matplotlib-interactive.md` を編集してください。mainへのコミットで自動公開します。
 `{python-interactive}` ブロック内のPythonコードが、ページ上の編集・実行欄になります。
 ブラウザ上の編集は記事には保存されません。
 

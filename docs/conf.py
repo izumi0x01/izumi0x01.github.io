@@ -2,7 +2,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 sys.path.insert(0, str(Path(__file__).parent / '_ext'))
-project = 'Matplotlibを編集して実行する'
+project = 'Izumi | Research & Wiki'
 author = 'Izumi'
 language = 'ja'
 extensions = ['myst_parser', 'sphinx.ext.mathjax', 'jupyterlite_sphinx', 'python_interactive', 'sphinx_copybutton']
