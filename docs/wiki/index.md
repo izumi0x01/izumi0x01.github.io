@@ -7,4 +7,5 @@ Pythonのコードを編集して実行できる研究ノートです。
 :caption: Python
 
 python/matplotlib-interactive
+python/draw_circle
 ```
